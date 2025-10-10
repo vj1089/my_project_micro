@@ -10,6 +10,14 @@ vpc_id           = "vpc-abc123"                # VPC id (REQUIRED)
 private_subnets  = ["subnet-11111111"]          # List of private subnet ids (REQUIRED)
 region           = "us-west-2"                  # Optional: region string used in some lookups
 
+# Enable optional behaviors
+# If you set enable_kms_alias_lookup = true, ensure the alias exists in this account/region
+enable_kms_alias_lookup = false
+# If you set ami_lookup_enabled = true, set ami_name_filter and ami_owners appropriately
+ami_lookup_enabled = false
+ami_name_filter = ""  # e.g. "amzn2-ami-hvm-*-x86_64-gp2"
+ami_owners = ["amazon"]
+
 # Optional variables (defaults present in variables.tf)
 os_type          = "linux"                      # "linux" or "windows"
 root_vol_size    = "100"                        # Root EBS size in GB
@@ -30,3 +38,17 @@ kms_key_alias_name_base = "alias/ebs-key"
 # - To force a customer key, set `kms_key_arn` explicitly (uncomment and set above).
 # - If you want the module to fail when no customer KMS key is resolved, add validation
 #   in your root module or ask me to add a strict check.
+
+# -------------------------
+# Tagging and metadata
+# -------------------------
+# Tag variables used by the module. Fill them as appropriate for your environment.
+it_owner = "Your Name"
+BPO = "Business Process Owner"
+compliance = "Non-GxP"
+RPO = 24
+RTO = 24
+application = "Infra"
+environment = "dev"
+department = "GTS - Infrastructure & Operations"
+
