@@ -129,3 +129,9 @@ variable "kms_key_alias_name_base" {
   description = "Base alias name used to compose a region-specific alias like 'alias/ebs-key-<region>'. If empty, alias lookup is skipped."
 }
 
+variable "enable_kms_alias_lookup" {
+  type        = bool
+  default     = false
+  description = "When true, the module will attempt to resolve a KMS alias built from kms_key_alias_name_base-<region>. Set to true only if the alias exists in this account/region."
+}
+

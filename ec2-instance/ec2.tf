@@ -3,14 +3,14 @@
 
 data "aws_region" "current" {}
 // Attempt to resolve a KMS key by alias constructed from kms_key_alias_name_base and region.
-data "aws_kms_key" "by_alias" {
-  count = length(trimspace(var.kms_key_alias_name_base)) > 0 ? 1 : 0
-  key_id = try(data.aws_kms_alias.by_name[0].target_key_id, null)
+data "aws_kms_alias" "by_name" {
+  count = var.enable_kms_alias_lookup && length(trimspace(var.kms_key_alias_name_base)) > 0 ? 1 : 0
+  name  = var.enable_kms_alias_lookup && length(trimspace(var.kms_key_alias_name_base)) > 0 ? format("%s-%s", var.kms_key_alias_name_base, coalescelist([data.aws_region.current.name, var.region])[0]) : null
 }
 
-data "aws_kms_alias" "by_name" {
-  count = length(trimspace(var.kms_key_alias_name_base)) > 0 ? 1 : 0
-  name  = length(trimspace(var.kms_key_alias_name_base)) > 0 ? format("%s-%s", var.kms_key_alias_name_base, coalescelist([data.aws_region.current.name, var.region])[0]) : null
+data "aws_kms_key" "by_alias" {
+  count = var.enable_kms_alias_lookup && length(trimspace(var.kms_key_alias_name_base)) > 0 ? 1 : 0
+  key_id = try(data.aws_kms_alias.by_name[0].target_key_id, null)
 }
 resource "aws_instance" "server" {
   ami = var.ami_id
