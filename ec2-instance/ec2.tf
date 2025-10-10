@@ -36,8 +36,10 @@ resource "aws_instance" "server" {
           length(trimspace(var.kms_key_arn)) > 0 ? var.kms_key_arn :
           (try(length(data.aws_kms_key.by_alias) > 0 && data.aws_kms_key.by_alias[0].arn != "", false) ? data.aws_kms_key.by_alias[0].arn : null)
         )
+        # Ensure the root EBS volume receives the shared resource tags (no RPO/RTO)
+        tags = local.resource_tags
       }
    
   
-  tags = merge({ Name = "${var.instance_name}"},local.common_tags)
+  tags = merge({ Name = "${var.instance_name}"}, local.ec2_tags)
 }

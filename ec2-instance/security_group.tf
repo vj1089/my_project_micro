@@ -11,7 +11,7 @@ resource "aws_security_group" "sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = merge({ Name = lower("${var.instance_name}-sg-${var.environment}")},local.common_tags)
+  tags = merge({ Name = lower("${var.instance_name}-sg-${var.environment}")}, local.resource_tags)
 }
 
 resource "aws_security_group_rule" "sg_lb_rule" {

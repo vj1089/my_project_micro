@@ -1,23 +1,26 @@
 ##### Terraform Local Block to set TAGs for EC2 Instance
 locals {                                       # <----------------------------------
-  common_tags = {
+  # Tags to apply to most resources (exclude EC2-only tags like RPO/RTO)
+  resource_tags = {
     Application     = var.application
     Environment     = var.environment
-    Deployment_type = "Terraform"	
+    Deployment_type = "Terraform"
     Deployment_repo = "${path.cwd}/${var.instance_name}"
     Compliance      = var.compliance
     SentinelOneAgent= ""
     QualysAgent     = ""
     SplunkAgent     = ""
-    BPO             = "${var.BPO}"
-    IT_Owner        = "${var.it_owner}"
-    RPO             = var.RPO
-    RTO             = var.RTO
+    BPO             = var.BPO
+    IT_Owner        = var.it_owner
     N2WS_Policy_Code = ""
     Department = var.department
-#AZ              = var.az
-#Patch Group     = var.patchgroup
   }
+
+  # EC2-specific tags: include the common resource tags plus RPO/RTO
+  ec2_tags = merge(resource_tags, {
+    RPO = var.RPO
+    RTO = var.RTO
+  })
 }
 ##### Terraform Local Block to general variable required for creation of  EC2 Instance
 locals {

@@ -42,13 +42,14 @@ kms_key_alias_name_base = "alias/ebs-key"
 # -------------------------
 # Tagging and metadata
 # -------------------------
-# Tag variables used by the module. Fill them as appropriate for your environment.
-it_owner = "Your Name"
-BPO = "Business Process Owner"
-compliance = "Non-GxP"
-RPO = 24
-RTO = 24
-application = "Infra"
-environment = "dev"
-department = "GTS - Infrastructure & Operations"
+# Tag variables used by the module. These are REQUIRED values and must be provided.
+# NOTE: RPO and RTO are required but are applied only to the EC2 instance (EC2-specific tags).
+it_owner = "Your Name"            # REQUIRED
+BPO = "Business Process Owner"    # REQUIRED
+compliance = "Non-GxP"            # REQUIRED
+RPO = 24                            # REQUIRED (EC2 only)
+RTO = 24                            # REQUIRED (EC2 only)
+application = "Infra"              # REQUIRED
+environment = "dev"                # REQUIRED
+department = "GTS - Infrastructure & Operations"  # REQUIRED
 

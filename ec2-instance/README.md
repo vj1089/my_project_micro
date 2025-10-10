@@ -33,6 +33,9 @@ Set these in your `terraform.tfvars` or workspace variables.
 - `key_name` — SSH/RDP keypair
 - `vpc_id` — VPC id used for selecting the security group mapping
 - `private_subnets` — list (first element used)
+ - Tag variables (all REQUIRED): `it_owner`, `BPO`, `compliance`, `application`, `environment`, `department`, `RPO`, `RTO`
+
+Note: `RPO` and `RTO` are required tag variables but are applied only to the EC2 instance (they are EC2-specific tags). The other tag variables are applied to all tagged resources.
 
 See the full variable reference below.
 
