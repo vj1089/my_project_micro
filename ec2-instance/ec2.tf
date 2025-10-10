@@ -21,6 +21,9 @@ resource "aws_instance" "server" {
   subnet_id = var.private_subnets[0]
   user_data = lower(var.os_type) == "linux"  ? file("${path.module}/userdata/init_linux") : file("${path.module}/userdata/init_win")
   metadata_options {
+    http_tokens = "required"         # require IMDSv2
+    http_endpoint = "enabled"        # enable instance metadata service
+    http_put_response_hop_limit = 2   # reasonable default
     instance_metadata_tags = "enabled"
   }
  
