@@ -116,3 +116,16 @@ variable "instance_role" {
   
 }
 
+variable "kms_key_arn" {
+  type        = string
+  default     = ""
+  description = "Optional explicit KMS key ARN to use for root EBS encryption. If set, this ARN is used directly."
+}
+
+ 
+variable "kms_key_alias_name_base" {
+  type        = string
+  default     = "alias/ebs-key"
+  description = "Base alias name used to compose a region-specific alias like 'alias/ebs-key-<region>'. If empty, alias lookup is skipped."
+}
+

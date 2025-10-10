@@ -1,0 +1,32 @@
+# Example terraform.tfvars for ec2-instance module
+# Copy this file to terraform.tfvars and edit values for your environment.
+
+# Required variables
+ami_id           = "ami-0123456789abcdef0"        # AMI ID (REQUIRED)
+instance_name    = "app-server-01"               # Name tag for the instance (REQUIRED)
+app_instance_type = "t3.medium"                  # EC2 instance type (REQUIRED)
+key_name         = "my-keypair"                 # SSH/RDP key pair (REQUIRED)
+vpc_id           = "vpc-abc123"                # VPC id (REQUIRED)
+private_subnets  = ["subnet-11111111"]          # List of private subnet ids (REQUIRED)
+region           = "us-west-2"                  # Optional: region string used in some lookups
+
+# Optional variables (defaults present in variables.tf)
+os_type          = "linux"                      # "linux" or "windows"
+root_vol_size    = "100"                        # Root EBS size in GB
+ebs_vol_size     = "10"                         # Additional EBS size example
+
+# KMS options (choose one)
+# 1) Explicit ARN (recommended for one-off or cross-account):
+# kms_key_arn = "arn:aws:kms:us-west-2:123456789012:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# 2) Alias-based auto-discovery (preferred for standardization):
+# Default alias base in module is "alias/ebs-key". The module will attempt to resolve
+# an alias named "${kms_key_alias_name_base}-${region}", e.g. "alias/ebs-key-us-west-2".
+kms_key_alias_name_base = "alias/ebs-key"
+
+# Security / best practices notes
+# - Do NOT commit production KMS ARNs or secrets to source control. Use environment-specific
+#   tfvars (excluded from VCS) or a secrets manager.
+# - To force a customer key, set `kms_key_arn` explicitly (uncomment and set above).
+# - If you want the module to fail when no customer KMS key is resolved, add validation
+#   in your root module or ask me to add a strict check.

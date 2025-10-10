@@ -1,5 +1,17 @@
 
 ### Terraform resource  block to create EC2 Instance
+
+data "aws_region" "current" {}
+// Attempt to resolve a KMS key by alias constructed from kms_key_alias_name_base and region.
+data "aws_kms_key" "by_alias" {
+  count = length(trim(var.kms_key_alias_name_base)) > 0 ? 1 : 0
+  key_id = try(data.aws_kms_alias.by_name.target_key_id, null)
+}
+
+data "aws_kms_alias" "by_name" {
+  count = length(trim(var.kms_key_alias_name_base)) > 0 ? 1 : 0
+  name  = length(trim(var.kms_key_alias_name_base)) > 0 ? format("%s-%s", var.kms_key_alias_name_base, coalescelist([data.aws_region.current.name, var.region])[0]) : null
+}
 resource "aws_instance" "server" {
   ami = var.ami_id
   instance_type = "${var.app_instance_type}"
@@ -17,7 +29,10 @@ resource "aws_instance" "server" {
         volume_type           = "gp3"
         encrypted             = true
         delete_on_termination = false
-        kms_key_id = "arn:aws-cn:kms:cn-north-1:256848935116:key/720b0f16-59d5-444b-a153-ecadd790deb8"#"arn:aws:kms:us-west-2:436207872885:key/4f247c31-7bd3-4574-8bb8-796045cd1133"
+        kms_key_id = (
+          length(trim(var.kms_key_arn)) > 0 ? var.kms_key_arn :
+          (length(data.aws_kms_key.by_alias) > 0 && data.aws_kms_key.by_alias[0].arn != "" ? data.aws_kms_key.by_alias[0].arn : null)
+        )
       }
    
   
