@@ -1,0 +1,40 @@
+#!/bin/bash
+check-osversion()
+{
+        if [ -f /etc/os-release ]; then
+                source /etc/os-release
+                linux_flavor=$ID                
+        elif [ -f /etc/redhat-release ]; then
+                linux_flavor=$(cat /etc/redhat-release | awk '{print tolower($1)}')
+        else
+                echo "Unsupported"                
+        fi
+
+        if [[ $linux_flavor == "ubuntu" || $linux_flavor == "debian" ]]; then
+                echo "OS version = $linux_flavor"
+                #sudo apt-get install -y python3
+
+                sudo apt-get update -y
+                
+                # Add your actions for Ubuntu or Debian here                
+        elif [[ $linux_flavor == "centos" || $linux_flavor == "rhel" ]]; then
+                echo " OS version = $linux_flavor"
+                # sudo dnf install -y python3 python3-pip
+                # pip3 install --user six || true
+                sudo yum update -y
+                # sudo alternatives --install /usr/bin/python python /usr/libexec/platform-python 1
+
+                # Add your actions for CentOS or RHEL here                
+        else
+                echo "OS Version = $linux_flavor"
+                exit "1"
+        fi
+
+}
+new_hostaname=$(curl -s http://169.254.169.254/latest/meta-data/tags/instance/Name)
+sudo hostnamectl set-hostname $new_hostaname
+echo "127.0.0.1   localhost" >> /etc/hosts
+echo "127.0.0.1   $new_hostaname" >> /etc/hosts
+check-osversion
+reboot
+

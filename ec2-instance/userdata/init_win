@@ -1,0 +1,8 @@
+<powershell>
+$password = "54OT33R5TxUniFTSHra8$" | ConvertTo-SecureString -asPlainText -Force
+$username = "beigenecorp.net\svc.ansible"
+$credential = New-Object System.Management.Automation.PSCredential($username,$password)
+$instanceName = Invoke-RestMethod  http://169.254.169.254/latest/meta-data/tags/instance/Name
+Add-Computer -domainname "beigenecorp.net" -NewName $instanceName -Credential $credential -Passthru -Verbose -Force -Restart
+Add-LocalGroupMember -Group "Administrators" -Member  "beigenecorp.net\svc.ansible"
+</powershell>
