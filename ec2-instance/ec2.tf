@@ -17,7 +17,7 @@ resource "aws_instance" "server" {
   instance_type = "${var.app_instance_type}"
   key_name = var.key_name 
   iam_instance_profile = "${var.instance_role}"
-  vpc_security_group_ids = [ aws_security_group.sg.id,var.sectool_sgs[var.vpc_id] ]
+  vpc_security_group_ids = compact([ aws_security_group.sg.id, lookup(var.sectool_sgs, var.vpc_id, null) ])
   subnet_id = var.private_subnets[0]
   user_data = lower(var.os_type) == "linux"  ? file("${path.module}/userdata/init_linux") : file("${path.module}/userdata/init_win")
   metadata_options {
@@ -31,7 +31,7 @@ resource "aws_instance" "server" {
         delete_on_termination = false
         kms_key_id = (
           length(trimspace(var.kms_key_arn)) > 0 ? var.kms_key_arn :
-          (length(data.aws_kms_key.by_alias) > 0 && data.aws_kms_key.by_alias[0].arn != "" ? data.aws_kms_key.by_alias[0].arn : null)
+          (try(length(data.aws_kms_key.by_alias) > 0 && data.aws_kms_key.by_alias[0].arn != "", false) ? data.aws_kms_key.by_alias[0].arn : null)
         )
       }
    
