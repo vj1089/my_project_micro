@@ -1,27 +1,29 @@
 ##### Terraform Local Block to set TAGs for EC2 Instance
-locals {                                       # <----------------------------------
+##### Terraform Local Block to set TAGs for EC2 Instance
+locals {
   # Tags to apply to most resources (exclude EC2-only tags like RPO/RTO)
   resource_tags = {
-    Application     = var.application
-    Environment     = var.environment
-    Deployment_type = "Terraform"
-    Deployment_repo = "${path.cwd}/${var.instance_name}"
-    Compliance      = var.compliance
-    SentinelOneAgent= ""
-    QualysAgent     = ""
-    SplunkAgent     = ""
-    BPO             = var.BPO
-    IT_Owner        = var.it_owner
+    Application      = var.application
+    Environment      = var.environment
+    Deployment_type  = "Terraform"
+    Deployment_repo  = "${path.cwd}/${var.instance_name}"
+    Compliance       = var.compliance
+    SentinelOneAgent = ""
+    QualysAgent      = ""
+    SplunkAgent      = ""
+    BPO              = var.BPO
+    IT_Owner         = var.it_owner
     N2WS_Policy_Code = ""
-    Department = var.department
+    Department       = var.department
   }
 
   # EC2-specific tags: include the common resource tags plus RPO/RTO
-  ec2_tags = merge(resource_tags, {
+  ec2_tags = merge(local.resource_tags, {
     RPO = var.RPO
     RTO = var.RTO
   })
 }
+
 ##### Terraform Local Block to general variable required for creation of  EC2 Instance
 locals {
   os_user = strcontains(lower(data.aws_ami.ami_data.description), "amazon linux") || strcontains(lower(data.aws_ami.ami_data.description), "red hat") ? "ec2-user" : (strcontains(lower(data.aws_ami.ami_data.description), "ubuntu") ? "ubuntu" : (strcontains(lower(data.aws_ami.ami_data.description), "debian") ? "admin" : (strcontains(lower(data.aws_ami.ami_data.description), "windows") ? "Administrator" :"root")))  
