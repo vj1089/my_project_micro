@@ -1,0 +1,2 @@
+# Ignore terraform.tfvars in rds folder
+rds/terraform.tfvars
