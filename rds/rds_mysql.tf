@@ -18,17 +18,17 @@ resource "aws_db_instance" "mysql_instance" {
         skip_final_snapshot = true
       # snapshot_identifier     = "bgcn-moveit-db-d-snap-dec23"
       # final_snapshot_identifier = "bgcn-moveit-db-d-snap-dec23"
-        parameter_group_name =  aws_db_parameter_group.db_parameter_group.name
-        option_group_name       = aws_db_option_group.db_option_group.name
-        vpc_security_group_ids  = [aws_security_group.sg.id]
-        db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
+  parameter_group_name =  aws_db_parameter_group.mysql_parameter_group[0].name
+  option_group_name       = aws_db_option_group.mysql_option_group[0].name
+  vpc_security_group_ids  = [aws_security_group.sg.id]
+  db_subnet_group_name    = aws_db_subnet_group.mysql_subnet_group[0].name
         copy_tags_to_snapshot   = true
         tags = merge({ Name = lower("${var.db_name}")},local.common_tags)
-        depends_on = [
-                  aws_security_group.sg,
-                  aws_db_subnet_group.db_subnet_group,
-                  aws_db_parameter_group.db_parameter_group
-                  ]
+  depends_on = [
+      aws_security_group.sg,
+      aws_db_subnet_group.mysql_subnet_group,
+      aws_db_parameter_group.mysql_parameter_group
+      ]
         
 }
 

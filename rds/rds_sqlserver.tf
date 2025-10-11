@@ -3,33 +3,33 @@
 
 resource "aws_db_instance" "sqlserver_instance" {
   count = var.db_engine == "sqlserver" ? 1 : 0
-        identifier              = var.db_name
-        allocated_storage       = var.db_storage
-        storage_type            = "gp3"
-        storage_encrypted       = true
+  identifier              = var.db_name
+  allocated_storage       = var.db_storage
+  storage_type            = "gp3"
+  storage_encrypted       = true
   kms_key_id              = data.aws_kms_alias.rds.target_key_arn
-        engine                  = var.db_engine
-        engine_version          = "${var.db_engine_version}0.${var.db_engine_minorVersion}.v1"
-        license_model = "license-included" ##Only required for MSSQL
-      # major_engine_version    = "10.0"
-        instance_class          = var.db_instance_type
-        username                = var.db_username
-        password                = var.db_password
-        publicly_accessible     = false
-        skip_final_snapshot = true
-      # snapshot_identifier     = "bgcn-moveit-db-d-snap-dec23"
-      # final_snapshot_identifier = "bgcn-moveit-db-d-snap-dec23"
-        parameter_group_name =  aws_db_parameter_group.db_parameter_group.name
-        option_group_name       = aws_db_option_group.db_option_group.name
-        vpc_security_group_ids  = [aws_security_group.sg.id]
-        db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
-        copy_tags_to_snapshot   = true
-        tags = merge({ Name = lower("${var.db_name}")},local.common_tags)
-        depends_on = [
-                  aws_security_group.sg,
-                  aws_db_subnet_group.db_subnet_group,
-                  aws_db_parameter_group.db_parameter_group
-                  ]
+  engine                  = var.db_engine
+  engine_version          = "${var.db_engine_version}0.${var.db_engine_minorVersion}.v1"
+  license_model = "license-included" ##Only required for MSSQL
+# major_engine_version    = "10.0"
+  instance_class          = var.db_instance_type
+  username                = var.db_username
+  password                = var.db_password
+  publicly_accessible     = false
+  skip_final_snapshot = true
+# snapshot_identifier     = "bgcn-moveit-db-d-snap-dec23"
+# final_snapshot_identifier = "bgcn-moveit-db-d-snap-dec23"
+  parameter_group_name =  aws_db_parameter_group.sqlserver_parameter_group[0].name
+  option_group_name       = aws_db_option_group.sqlserver_option_group[0].name
+  vpc_security_group_ids  = [aws_security_group.sg.id]
+  db_subnet_group_name    = aws_db_subnet_group.sqlserver_subnet_group[0].name
+  copy_tags_to_snapshot   = true
+  tags = merge({ Name = lower("${var.db_name}")},local.common_tags)
+  depends_on = [
+      aws_security_group.sg,
+      aws_db_subnet_group.sqlserver_subnet_group,
+      aws_db_parameter_group.sqlserver_parameter_group
+      ]
         
 }
 

@@ -19,17 +19,17 @@ resource "aws_db_instance" "postgres_instance" {
         multi_az = true  ##Custom for thi CR only
       # snapshot_identifier     = "bgcn-moveit-db-d-snap-dec23"
       # final_snapshot_identifier = "bgcn-moveit-db-d-snap-dec23"
-        parameter_group_name =  aws_db_parameter_group.db_parameter_group.name
-        option_group_name       = aws_db_option_group.db_option_group.name
-        vpc_security_group_ids  = [aws_security_group.sg.id]
-        db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
+  parameter_group_name =  aws_db_parameter_group.postgres_parameter_group[0].name
+  option_group_name       = aws_db_option_group.postgres_option_group[0].name
+  vpc_security_group_ids  = [aws_security_group.sg.id]
+  db_subnet_group_name    = aws_db_subnet_group.postgres_subnet_group[0].name
         copy_tags_to_snapshot   = true
         tags = merge({ Name = lower("${var.db_name}")},local.common_tags)
-        depends_on = [
-                  aws_security_group.sg,
-                  aws_db_subnet_group.db_subnet_group,
-                  aws_db_parameter_group.db_parameter_group
-                  ]
+  depends_on = [
+      aws_security_group.sg,
+      aws_db_subnet_group.postgres_subnet_group,
+      aws_db_parameter_group.postgres_parameter_group
+      ]
         
 }
 

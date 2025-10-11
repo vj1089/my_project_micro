@@ -1,13 +1,11 @@
-output "RDS_Details" {    
+output "RDS_Details" {
     value = {
-        rds_instance_id = aws_db_instance.db_instance.id
-        name = aws_db_instance.db_instance.tags_all["Name"]
-        private_ip = aws_db_instance.db_instance.address
-        instance_sg_id = aws_security_group.sg.id
-        instance_sg_name = aws_security_group.sg.tags_all["Name"]
-        db_subnetgroup_id = aws_db_subnet_group.db_subnet_group.id
-        db_subnetgroup_name = aws_db_subnet_group.db_subnet_group.name
-        db_parametergroup_id = aws_db_parameter_group.db_parameter_group.id
-        db_parametergroup_name = aws_db_parameter_group.db_parameter_group.name
+        rds_instance_id      = var.db_engine == "mysql" ? try(aws_db_instance.mysql_instance[0].id, null) : var.db_engine == "postgres" ? try(aws_db_instance.postgres_instance[0].id, null) : var.db_engine == "sqlserver" ? try(aws_db_instance.sqlserver_instance[0].id, null) : null
+        name                 = var.db_engine == "mysql" ? try(aws_db_instance.mysql_instance[0].tags_all["Name"], null) : var.db_engine == "postgres" ? try(aws_db_instance.postgres_instance[0].tags_all["Name"], null) : var.db_engine == "sqlserver" ? try(aws_db_instance.sqlserver_instance[0].tags_all["Name"], null) : null
+        private_ip           = var.db_engine == "mysql" ? try(aws_db_instance.mysql_instance[0].address, null) : var.db_engine == "postgres" ? try(aws_db_instance.postgres_instance[0].address, null) : var.db_engine == "sqlserver" ? try(aws_db_instance.sqlserver_instance[0].address, null) : null
+        db_subnetgroup_id    = var.db_engine == "mysql" ? try(aws_db_subnet_group.mysql_subnet_group[0].id, null) : var.db_engine == "postgres" ? try(aws_db_subnet_group.postgres_subnet_group[0].id, null) : var.db_engine == "sqlserver" ? try(aws_db_subnet_group.sqlserver_subnet_group[0].id, null) : null
+        db_subnetgroup_name  = var.db_engine == "mysql" ? try(aws_db_subnet_group.mysql_subnet_group[0].name, null) : var.db_engine == "postgres" ? try(aws_db_subnet_group.postgres_subnet_group[0].name, null) : var.db_engine == "sqlserver" ? try(aws_db_subnet_group.sqlserver_subnet_group[0].name, null) : null
+        db_parametergroup_id = var.db_engine == "mysql" ? try(aws_db_parameter_group.mysql_parameter_group[0].id, null) : var.db_engine == "postgres" ? try(aws_db_parameter_group.postgres_parameter_group[0].id, null) : var.db_engine == "sqlserver" ? try(aws_db_parameter_group.sqlserver_parameter_group[0].id, null) : null
+        db_parametergroup_name = var.db_engine == "mysql" ? try(aws_db_parameter_group.mysql_parameter_group[0].name, null) : var.db_engine == "postgres" ? try(aws_db_parameter_group.postgres_parameter_group[0].name, null) : var.db_engine == "sqlserver" ? try(aws_db_parameter_group.sqlserver_parameter_group[0].name, null) : null
     }
 }
