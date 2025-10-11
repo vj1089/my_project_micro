@@ -1,0 +1,31 @@
+# Example terraform.tfvars for rds module
+# Copy this file to terraform.tfvars and edit values for your environment.
+
+# Required variables
+region    = "cn-north-1"
+
+# TAG Variables (all REQUIRED)
+it_owner = "Your Name"            # REQUIRED
+BPO = "Business Process Owner"    # REQUIRED
+compliance = "Non-GxP"            # REQUIRED
+application = "AppName"           # REQUIRED
+environment = "dev"               # REQUIRED
+department = "IT"                 # REQUIRED
+
+# RDS variables
+vpc_id = "vpc-xxxxxxxxxxxxxxxxx"  # VPC ID
+subnet_id = ["subnet-xxxxxxxx", "subnet-yyyyyyyy"]
+db_name = "mydb"
+db_storage = 100
+
+db_engine = "mysql"               # "mysql", "postgres", or "sqlserver"
+db_engine_version = "8"
+db_engine_minorVersion = "0.42"
+db_instance_type = "db.m5.large"
+db_username = "admin"
+db_password = "SuperSecret123"
+
+# Security group rules example
+sg_rules_rds = [
+  "3306,tcp,10.0.0.0/16,Allow MySQL access from VPC",
+]
