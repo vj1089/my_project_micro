@@ -1,7 +1,7 @@
 
 
 
-resource "aws_db_instance" "db_instance" {
+resource "aws_db_instance" "sqlserver_instance" {
   count = var.db_engine == "sqlserver" ? 1 : 0
         identifier              = var.db_name
         allocated_storage       = var.db_storage
@@ -34,14 +34,14 @@ resource "aws_db_instance" "db_instance" {
 }
 
 
-resource "aws_db_subnet_group" "db_subnet_group" {
+resource "aws_db_subnet_group" "sqlserver_subnet_group" {
   count = var.db_engine == "sqlserver" ? 1 : 0
   name       = var.db_name
   subnet_ids = var.subnet_id
   tags = merge({ Name = lower("${var.db_name}")},local.common_tags)
 }
 
-resource "aws_db_parameter_group" "db_parameter_group" {
+resource "aws_db_parameter_group" "sqlserver_parameter_group" {
   count = var.db_engine == "sqlserver" ? 1 : 0
   name   = var.db_name
   family = "${var.db_engine}-${var.db_engine_version}"
@@ -54,7 +54,7 @@ resource "aws_db_parameter_group" "db_parameter_group" {
   
 }
 
-resource "aws_db_option_group" "db_option_group" {
+resource "aws_db_option_group" "sqlserver_option_group" {
   count = var.db_engine == "sqlserver" ? 1 : 0
   name                     = "${var.db_name}"
   option_group_description = "Option Group for ${var.db_name}"
