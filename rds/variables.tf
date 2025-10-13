@@ -75,7 +75,7 @@ variable "db_password" {
   type = string 
 }
 variable "managed_by" {
-  type =  "string"
+  type =  string
   default = "Harness"
 }
 
