@@ -16,7 +16,7 @@ resource "aws_db_instance" "postgres_instance" {
   password                = var.db_password
   publicly_accessible     = false
   skip_final_snapshot = true
-  multi_az = true  ##Custom for thi CR only
+  multi_az = var.multi_az
 # snapshot_identifier     = "bgcn-moveit-db-d-snap-dec23"
 # final_snapshot_identifier = "bgcn-moveit-db-d-snap-dec23"
   parameter_group_name =  aws_db_parameter_group.postgres_parameter_group[0].name

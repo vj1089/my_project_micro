@@ -16,7 +16,9 @@ department = "IT"                 # REQUIRED
 vpc_id = "vpc-xxxxxxxxxxxxxxxxx"  # VPC ID
 subnet_id = ["subnet-xxxxxxxx", "subnet-yyyyyyyy"]
 db_name = "mydb"
+
 db_storage = 100
+multi_az = false  # Set to true to enable Multi-AZ deployment
 
 db_engine = "mysql"               # "mysql", "postgres", or "sqlserver"
 db_engine_version = "8"

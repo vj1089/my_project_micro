@@ -11,7 +11,8 @@ resource "aws_db_instance" "sqlserver_instance" {
   engine                  = var.db_engine
   engine_version          = "${var.db_engine_version}0.${var.db_engine_minorVersion}.v1"
   license_model = "license-included" ##Only required for MSSQL
-# major_engine_version    = "10.0"
+  # major_engine_version    = "10.0"
+  multi_az = var.multi_az
   instance_class          = var.db_instance_type
   username                = var.db_username
   password                = var.db_password

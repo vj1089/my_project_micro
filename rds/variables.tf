@@ -1,3 +1,8 @@
+variable "multi_az" {
+  description = "Enable multi-AZ deployment for RDS instance."
+  type        = bool
+  default     = false
+}
 variable "region" {
   type  = string
   

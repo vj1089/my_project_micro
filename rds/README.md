@@ -25,6 +25,7 @@ This module provisions an AWS RDS instance (MySQL, PostgreSQL, or SQL Server) wi
 
 ## Required variables (quick list)
 
+
 Set these in your `terraform.tfvars` or workspace variables:
 
 - `db_engine` — "mysql", "postgres", or "sqlserver"
@@ -35,6 +36,7 @@ Set these in your `terraform.tfvars` or workspace variables:
 - `db_username` — master username
 - `db_password` — master password
 - `db_storage` — allocated storage (GB)
+- `multi_az` — (bool) enable Multi-AZ deployment (default: false)
 - `vpc_id` — VPC id
 - `subnet_id` — list of subnet ids
 - Tag variables (all REQUIRED): `it_owner`, `BPO`, `compliance`, `application`, `environment`, `department`
@@ -66,6 +68,7 @@ module "rds" {
   db_username          = "admin"
   db_password          = "SuperSecret123"
   db_storage           = 100
+  multi_az             = true
   vpc_id               = "vpc-abc123"
   subnet_id            = ["subnet-11111111", "subnet-22222222"]
 
@@ -90,6 +93,7 @@ module "rds" {
 - `db_username` (string)
 - `db_password` (string)
 - `db_storage` (number)
+- `multi_az` (bool) — enable Multi-AZ deployment (default: false)
 - `vpc_id` (string)
 - `subnet_id` (list)
 - Tag variables: `it_owner`, `BPO`, `compliance`, `application`, `environment`, `department`
