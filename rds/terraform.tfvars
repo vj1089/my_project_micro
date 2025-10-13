@@ -19,6 +19,8 @@ db_engine_minorVersion = "0.42"
 db_instance_type = "db.m5.large"#"db.t3.2xlarge"
 db_username = "mysql_admin"
 db_password = "Test#12092025"
+multi_az = false  # Set to true to enable Multi-AZ deployment
+
 
 #Subnet Group Variable
 subnet_id = ["subnet-00dbe5995075104cb","subnet-01a9a138e30e33f7c"]
