@@ -8,5 +8,6 @@ locals {                                       # <------------------------------
     BPO             = "${var.BPO}"
     IT_Owner        = "${var.it_owner}"    
     Department = var.department
+    Managed_By      = var.managed_by
   }
 }

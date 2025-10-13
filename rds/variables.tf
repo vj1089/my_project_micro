@@ -74,6 +74,10 @@ variable "db_username" {
 variable "db_password" {
   type = string 
 }
+variable "managed_by" {
+  type =  "string"
+  default = "Harness"
+}
 
 ## Subnet ID for Subnet group to be created for DB
 variable "subnet_id" {
