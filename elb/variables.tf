@@ -36,6 +36,13 @@ variable "environment" {
 variable "department" {
     type =  string
 }
+
+variable "managed_by" {
+  type =  string
+  default = "Harness"
+}
+
+
 # Load Balancer Variable
 variable "lb_name" {
   type  = string

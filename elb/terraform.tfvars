@@ -13,6 +13,7 @@ BPO = "Imran Bawany" ##required
 
 lb_subnets =["subnet-00dbe5995075104cb","subnet-01a9a138e30e33f7c"]  #BG-MAIN Validation Web Tier - C and BG-MAIN Validation Web Tier - B
 load_balancer_type = "application"
+
 vpc_id = "vpc-00b3ea864e13387ef"  #bgne-test-vpc
 lb_name = "bgus-global-harness-alb"
 lb_target_group_port = ["443"]

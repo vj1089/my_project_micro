@@ -10,6 +10,11 @@ output "LB_Details" {
     }
 }
 
-output "ELBID" {
-    value = var.load_balancer_type == "application" ? aws_lb_listener.this[*].tags_all : []
+
+# Listener ARNs and Ports (for ALB)
+output "listener_arns" {
+    value = var.load_balancer_type == "application" ? aws_lb_listener.this[*].arn : []
+}
+output "listener_ports" {
+    value = var.load_balancer_type == "application" ? aws_lb_listener.this[*].port : []
 }
