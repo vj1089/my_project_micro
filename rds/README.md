@@ -1,6 +1,14 @@
 # RDS Module — secure, flexible, and multi-engine
 
-This module provisions an AWS RDS instance (MySQL, PostgreSQL, or SQL Server) with best practices for encryption, tagging, and engine selection.
+
+This module provisions an AWS RDS instance with best practices for encryption, tagging, and engine selection.
+
+**Currently Supported RDS Engine Types:**
+
+- MySQL
+- PostgreSQL
+- SQL Server (MSSQL)
+
 
 --
 
