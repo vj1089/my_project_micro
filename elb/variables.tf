@@ -70,6 +70,13 @@ variable "sg_rules_alb" {
 }
 # EC2 variables #
 
+# Domain for ACM certificate lookup
+variable "lb_domain" {
+  type        = string
+  default     = "*.beigenecorp.net"
+  description = "Domain for which to fetch ACM certificate ARN. Default is *.beigenecorp.net."
+}
+
 # Generalized ELB variables for ALB/NLB
 variable "lb_internal" {
   type    = bool

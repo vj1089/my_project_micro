@@ -1,3 +1,8 @@
+data "aws_acm_certificate" "default" {
+  domain      = var.lb_domain
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
 
 resource "aws_lb" "this" {
   name               = var.lb_name
@@ -36,7 +41,7 @@ resource "aws_lb" "this" {
     port              = var.lb_target_group_port[count.index]
     protocol          = var.lb_listener_protocol
     ssl_policy        = var.lb_listener_ssl_policy
-    certificate_arn   = var.lb_listener_certificate_arn
+    certificate_arn   = var.lb_listener_protocol == "HTTPS" ? (var.lb_listener_certificate_arn != null ? var.lb_listener_certificate_arn : data.aws_acm_certificate.default.arn) : null
 
     default_action {
       type             = "forward"

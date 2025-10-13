@@ -28,5 +28,7 @@ lb_target_group_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP/UDP
 lb_target_type = "instance"         # For ALB: instance/ip, for NLB: instance/ip
 lb_health_check_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP
 lb_listener_protocol = "HTTP"       # For ALB: HTTP/HTTPS, for NLB: TCP/TLS
-lb_listener_ssl_policy = null        # For ALB HTTPS, e.g. "ELBSecurityPolicy-TLS13-1-2-2021-06"
+lb_listener_ssl_policy = lb_listener_protocol == "HTTPS" ? "ELBSecurityPolicy-TLS13-1-2-2021-06" : null # Recommended for HTTPS
 lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
+# Domain for ACM certificate lookup (optional, default is *.beigenecorp.net)
+lb_domain = "*.beigenecorp.net" # For ALB HTTPS, 

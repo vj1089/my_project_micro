@@ -31,6 +31,11 @@ module "elb" {
   lb_name               = "bgus-global-outs-alb"
   lb_target_group_port  = ["443"]
   sg_rules_alb          = ["443,tcp,10.8.0.0/24,Allow private IP"]
+
+  # Optional: Set the domain for ACM certificate lookup (default is *.beigenecorp.net)
+  # If not set, the module will use the ACM certificate for *.beigenecorp.net
+  # If you want to use a different domain, set lb_domain to your domain name
+  # lb_domain = "my.custom.domain.com"
 }
 ```
 
@@ -69,7 +74,9 @@ lb_listeners = [
     port            = 443
     protocol        = "HTTPS"
     ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-    certificate_arn = "arn:aws:acm:..."
+    # If you want to use a specific ACM certificate, set certificate_arn here
+    # Otherwise, the module will use the ACM certificate for lb_domain
+    # certificate_arn = "arn:aws:acm:..."
   }
 ]
 
@@ -105,8 +112,11 @@ tg_tags = {
 }
 ```
 
+
 ## Variables
 See `variables.tf` for all available variables and their descriptions.
+
+- `lb_domain`: The domain to use for ACM certificate lookup. If not set, defaults to `*.beigenecorp.net`. The module will automatically use the ACM certificate for this domain for HTTPS listeners unless you specify a certificate ARN directly.
 
 ## Outputs
 - `LB_Details`: Map with LB ID, DNS, Name, Target Group IDs/Ports, Listener IDs/Ports
