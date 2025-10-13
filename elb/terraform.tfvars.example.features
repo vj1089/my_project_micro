@@ -1,0 +1,51 @@
+# --- Advanced Features ---
+
+# Multiple Listeners Example (list of maps)
+lb_listeners = [
+  {
+    port            = 80
+    protocol        = "HTTP"
+    ssl_policy      = null
+    certificate_arn = null
+  },
+  {
+    port            = 443
+    protocol        = "HTTPS"
+    ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+    certificate_arn = "arn:aws:acm:..."
+  }
+]
+
+# Listener Rules Example (list of maps, for ALB)
+lb_listener_rules = [
+  {
+    listener_index     = 1 # index in lb_listeners
+    priority           = 100
+    type               = "path-pattern"
+    value              = "/api/*"
+    target_group_index = 0
+  }
+]
+
+# Target Group Health Check Customization
+lb_health_check = {
+  interval            = 30
+  timeout             = 5
+  healthy_threshold   = 5
+  unhealthy_threshold = 2
+  matcher             = "200-399" # for HTTP/HTTPS
+  path                = "/health"
+}
+
+# Custom Tags for Target Groups and Listeners
+tg_tags = {
+  environment = "dev"
+  team        = "platform"
+}
+listener_tags = {
+  environment = "dev"
+  team        = "platform"
+}
+
+# Outputs for All Key Attributes (no input needed, just for documentation)
+# Outputs will include: LB ARN, DNS, zone IDs, TG ARNs, Listener ARNs, etc.

@@ -24,7 +24,7 @@ resource "aws_security_group_rule" "sg_lb_rule" {
     protocol          = element(split(",", element(var.sg_rules_alb, count.index)), 1)
     cidr_blocks       = [element(split(",", element(var.sg_rules_alb, count.index)), 2)]
     security_group_id = aws_security_group.sg_lb_dev.id
-    description       = "ALB ingress traffic from user for ${var.application} Application"
+  description       = "LB ingress traffic from user for ${var.application} Application"
     depends_on = [
       aws_security_group.sg_lb_dev
     ]

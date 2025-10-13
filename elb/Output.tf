@@ -1,17 +1,15 @@
 output "LB_Details" {
-    
     value = {
-        LB_ID = aws_lb.alb-dev.id
-        DNS_Name =  aws_lb.alb-dev.dns_name        
-        LB_Name = aws_lb.alb-dev.tags_all["Name"]
-        TG_ID = aws_lb_target_group.alb-dev-tg1[*].id
-        TG_PORT = aws_lb_target_group.alb-dev-tg1[*].port
-        LIST_ID = aws_lb_listener.dev-listener[*].id
-        LIST_PORT =aws_lb_listener.dev-listener[*].port
+        LB_ID    = aws_lb.this.id
+        DNS_Name = aws_lb.this.dns_name
+        LB_Name  = aws_lb.this.tags_all["Name"]
+        TG_ID    = aws_lb_target_group.this[*].id
+        TG_PORT  = aws_lb_target_group.this[*].port
+        LIST_ID  = var.load_balancer_type == "application" ? aws_lb_listener.this[*].id : []
+        LIST_PORT = var.load_balancer_type == "application" ? aws_lb_listener.this[*].port : []
     }
 }
 
 output "ELBID" {
-    value = aws_lb_listener.dev-listener[*].tags_all
-  
+    value = var.load_balancer_type == "application" ? aws_lb_listener.this[*].tags_all : []
 }

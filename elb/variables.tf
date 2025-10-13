@@ -63,3 +63,52 @@ variable "sg_rules_alb" {
 }
 # EC2 variables #
 
+# Generalized ELB variables for ALB/NLB
+variable "lb_internal" {
+  type    = bool
+  default = true
+  description = "Whether the LB is internal (true) or internet-facing (false)"
+}
+
+variable "lb_enable_deletion_protection" {
+  type    = bool
+  default = false
+  description = "Enable deletion protection for the LB"
+}
+
+variable "lb_target_group_protocol" {
+  type    = string
+  default = "HTTP"
+  description = "Protocol for the target group (HTTP, HTTPS, TCP, etc.)"
+}
+
+variable "lb_target_type" {
+  type    = string
+  default = "instance"
+  description = "Target type for the target group (instance, ip, lambda)"
+}
+
+variable "lb_health_check_protocol" {
+  type    = string
+  default = "HTTP"
+  description = "Protocol for health check (HTTP, HTTPS, TCP, etc.)"
+}
+
+variable "lb_listener_protocol" {
+  type    = string
+  default = "HTTP"
+  description = "Listener protocol (HTTP, HTTPS, TCP, TLS)"
+}
+
+variable "lb_listener_ssl_policy" {
+  type    = string
+  default = null
+  description = "SSL policy for HTTPS/TLS listeners (ALB only)"
+}
+
+variable "lb_listener_certificate_arn" {
+  type    = string
+  default = null
+  description = "ARN of the SSL certificate for HTTPS/TLS listeners (ALB only)"
+}
+

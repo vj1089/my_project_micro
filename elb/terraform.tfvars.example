@@ -1,0 +1,81 @@
+region    = "us-west-2"
+
+#TAG Variables
+it_owner = "Kristina Kinard"  ##required
+BPO = "April Song" ##required
+compliance = "Non-GxP" ##required  
+application = "OutSystems" ##required
+environment = "V" ##required
+department = "GTS - GA" ##required
+
+lb_subnets = ["subnet-9f5eb2c4", "subnet-58fc6c11"]
+load_balancer_type = "application" # or "network"
+vpc_id = "vpc-1d4e687a"
+lb_name = "bgus-global-outs-alb"
+lb_target_group_port = ["443"]
+sg_rules_alb = [
+  "443,tcp,10.8.0.0/24,Allow private IP"
+]
+
+# Generalized ELB variables
+lb_internal = true
+lb_enable_deletion_protection = false
+lb_target_group_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP/UDP
+lb_target_type = "instance"         # For ALB: instance/ip, for NLB: instance/ip
+lb_health_check_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP
+lb_listener_protocol = "HTTP"       # For ALB: HTTP/HTTPS, for NLB: TCP/TLS
+lb_listener_ssl_policy = null        # For ALB HTTPS, e.g. "ELBSecurityPolicy-TLS13-1-2-2021-06"
+lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
+
+# --- Optional Advanced Features ---
+# The following variables are OPTIONAL and only needed if you want to use advanced features like multiple listeners, listener rules, custom health checks, or custom tags.
+
+# Multiple Listeners Example (list of maps)
+# lb_listeners = [
+#   {
+#     port            = 80
+#     protocol        = "HTTP"
+#     ssl_policy      = null
+#     certificate_arn = null
+#   },
+#   {
+#     port            = 443
+#     protocol        = "HTTPS"
+#     ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+#     certificate_arn = "arn:aws:acm:..."
+#   }
+# ]
+
+# Listener Rules Example (list of maps, for ALB)
+# lb_listener_rules = [
+#   {
+#     listener_index     = 1 # index in lb_listeners
+#     priority           = 100
+#     type               = "path-pattern"
+#     value              = "/api/*"
+#     target_group_index = 0
+#   }
+# ]
+
+# Target Group Health Check Customization
+# lb_health_check = {
+#   interval            = 30
+#   timeout             = 5
+#   healthy_threshold   = 5
+#   unhealthy_threshold = 2
+#   matcher             = "200-399" # for HTTP/HTTPS
+#   path                = "/health"
+# }
+
+# Custom Tags for Target Groups and Listeners
+# tg_tags = {
+#   environment = "dev"
+#   team        = "platform"
+# }
+# listener_tags = {
+#   environment = "dev"
+#   team        = "platform"
+# }
+
+# Outputs for All Key Attributes (no input needed, just for documentation)
+# Outputs will include: LB ARN, DNS, zone IDs, TG ARNs, Listener ARNs, etc.
