@@ -5,14 +5,9 @@ resource "aws_lb" "this" {
   load_balancer_type = var.load_balancer_type
   subnets            = var.lb_subnets
   enable_deletion_protection = var.lb_enable_deletion_protection
-  
-  dynamic "security_groups" {
-    for_each = var.load_balancer_type == "application" ? [1] : []
-    content {
-      security_groups = [aws_security_group.sg_lb_dev.id]
-    }
-  }
-  
+
+  security_groups = var.load_balancer_type == "application" ? [aws_security_group.sg_lb_dev.id] : null
+
   tags = merge({ Name = var.lb_name }, local.common_tags)
   depends_on = [aws_security_group.sg_lb_dev]
 }
