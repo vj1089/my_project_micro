@@ -87,6 +87,42 @@ module "ec2_server" {
 }
 ```
 
+### Security group rule CSV examples (supported formats)
+
+The module accepts `sg_rules_ec2` as a list of CSV strings in the format:
+
+`"<port or port-range>,<protocol>,<source>,<description>"`
+
+Examples:
+
+- Single port, CIDR:
+
+```hcl
+sg_rules_ec2 = ["22,tcp,10.8.126.221/32,AWS WorkSpaces Vaibhav Jain"]
+```
+
+- Port range, CIDR:
+
+```hcl
+sg_rules_ec2 = ["1024-2048,tcp,10.8.0.0/24,App ephemeral ports"]
+```
+
+- Source as security group id (reference an SG id in the same account):
+
+```hcl
+sg_rules_ec2 = ["443,tcp,sg-0123456789abcdef0,Allow HTTPS from another SG"]
+```
+
+- Source as prefix list id (useful for managed services / AWS-managed prefixes):
+
+```hcl
+sg_rules_ec2 = ["53,udp,pl-0123456789abcdef0,DNS to Route53 Resolver"]
+```
+
+Notes:
+- The parser will use the `source` field as either a CIDR, an `sg-...` id (sets `source_security_group_id`) or a `pl-...` id (sets `prefix_list_ids`).
+- Descriptions may not contain commas (CSV parsing is naive). For richer rules consider switching to a structured `list(object({...}))` variable instead.
+
 AMI lookup example (optional):
 
 ```hcl
