@@ -66,7 +66,8 @@ variable "lb_target_group_port" {
 }
 variable "sg_rules_alb" {
   type        = list(string)
-  description = "CCMS Rule for TCP"
+  description = "SG Rule for TCP"
+  default     = []
 }
 # EC2 variables #
 
