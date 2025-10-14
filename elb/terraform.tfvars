@@ -3,7 +3,7 @@ region    = "us-west-2"
 #TAG Variables
 it_owner = "Imran Bawany"  ##required
 BPO = "Imran Bawany" ##required
- compliance = "Non-GxP" ##required  
+ compliance = "Non-GxP" ##required
  application = "Harness" ##required
  environment = "D" ##required
  department = "GTS - Infrastructure and Operations" ##required
@@ -18,7 +18,7 @@ vpc_id = "vpc-00b3ea864e13387ef"  #bgne-test-vpc
 lb_name = "bgus-global-harness-alb"
 lb_target_group_port = ["443"]
 sg_rules_alb = [
-  "443,tcp,10.8.0.0/24,Allow private IP"  
+  "443,tcp,10.8.0.0/24,Allow private IP"
 ]
 
 # Generalized ELB variables
@@ -27,8 +27,8 @@ lb_enable_deletion_protection = false
 lb_target_group_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP/UDP
 lb_target_type = "instance"         # For ALB: instance/ip, for NLB: instance/ip
 lb_health_check_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP
-lb_listener_protocol = "HTTP"       # For ALB: HTTP/HTTPS, for NLB: TCP/TLS
+lb_listener_protocol = "HTTPS"       # For ALB: HTTP/HTTPS, for NLB: TCP/TLS
 lb_listener_ssl_policy = lb_listener_protocol == "HTTPS" ? "ELBSecurityPolicy-TLS13-1-2-2021-06" : null # Recommended for HTTPS
-lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
+#lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
 # Domain for ACM certificate lookup (optional, default is *.beigenecorp.net)
-lb_domain = "*.beigenecorp.net" # For ALB HTTPS, 
+lb_domain = "*.beigenecorp.net" # For ALB HTTPS,

@@ -4,6 +4,11 @@ data "aws_acm_certificate" "default" {
   most_recent = true
 }
 
+locals {
+  # Determine effective SSL policy: use provided policy when set; if listener protocol is HTTPS and no policy set, use a recommended default.
+  effective_ssl_policy = var.lb_listener_ssl_policy != null ? var.lb_listener_ssl_policy : (var.lb_listener_protocol == "HTTPS" ? "ELBSecurityPolicy-TLS13-1-2-2021-06" : null)
+}
+
 resource "aws_lb" "this" {
   name               = var.lb_name
   internal           = var.lb_internal
@@ -39,9 +44,9 @@ resource "aws_lb" "this" {
     count = var.load_balancer_type == "application" ? length(var.lb_target_group_port) : 0
     load_balancer_arn = aws_lb.this.arn
     port              = var.lb_target_group_port[count.index]
-    protocol          = var.lb_listener_protocol
-    ssl_policy        = var.lb_listener_ssl_policy
-    certificate_arn   = var.lb_listener_protocol == "HTTPS" ? (var.lb_listener_certificate_arn != null ? var.lb_listener_certificate_arn : data.aws_acm_certificate.default.arn) : null
+  protocol          = var.lb_listener_protocol
+  ssl_policy        = local.effective_ssl_policy
+  certificate_arn   = var.lb_listener_protocol == "HTTPS" ? (var.lb_listener_certificate_arn != null ? var.lb_listener_certificate_arn : data.aws_acm_certificate.default.arn) : null
 
     default_action {
       type             = "forward"
