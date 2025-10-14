@@ -49,12 +49,14 @@ resource "aws_lb" "this" {
 
   # Listener for ALB only
   resource "aws_lb_listener" "this" {
-    count = var.load_balancer_type == "application" ? length(var.lb_target_group_port) : 0
+    # create a listener per target port for both ALB and NLB. Protocol selection controls behavior.
+    count = length(var.lb_target_group_port)
     load_balancer_arn = aws_lb.this.arn
     port              = var.lb_target_group_port[count.index]
   protocol          = var.lb_listener_protocol
   ssl_policy        = local.effective_ssl_policy
-  certificate_arn   = var.lb_listener_protocol == "HTTPS" ? (var.lb_listener_certificate_arn != null ? var.lb_listener_certificate_arn : data.aws_acm_certificate.default.arn) : null
+    # For HTTPS (ALB) or TLS (NLB), use provided certificate ARN or lookup via ACM; otherwise null
+    certificate_arn   = (var.lb_listener_protocol == "HTTPS" || var.lb_listener_protocol == "TLS") ? (var.lb_listener_certificate_arn != null ? var.lb_listener_certificate_arn : data.aws_acm_certificate.default.arn) : null
 
     default_action {
       type             = "forward"
