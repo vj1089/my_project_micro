@@ -13,9 +13,10 @@ load_balancer_type = "application" # or "network"
 vpc_id = "vpc-1d4e687a"
 lb_name = "bgus-global-outs-alb"
 lb_target_group_port = ["443"]
-sg_rules_alb = [
-  "443,tcp,10.8.0.0/24,Allow private IP"
-]
+# Optional security group rules for ALB. Leave unset or empty for NLB.
+# sg_rules_alb = [
+#   "443,tcp,10.8.0.0/24,Allow private IP"
+# ]
 
 # Generalized ELB variables
 lb_internal = true
@@ -61,13 +62,14 @@ lb_domain = "*.beigenecorp.net"
 # ]
 
 # Target Group Health Check Customization
+# Target Group Health Check Customization
+# Use var.lb_health_check (map) to customize: interval, timeout, healthy_threshold, unhealthy_threshold
+# Example (optional):
 # lb_health_check = {
 #   interval            = 30
 #   timeout             = 5
 #   healthy_threshold   = 5
 #   unhealthy_threshold = 2
-#   matcher             = "200-399" # for HTTP/HTTPS
-#   path                = "/health"
 # }
 
 # Custom Tags for Target Groups and Listeners

@@ -56,6 +56,8 @@ module "elb" {
   vpc_id                = "vpc-1d4e687a"
   lb_name               = "bgus-global-outs-nlb"
   lb_target_group_port  = ["443"]
+  # Optional: security group rules for ALB. Leave unset or empty for NLB.
+  # sg_rules_alb = ["443,tcp,10.8.0.0/24,Allow private IP"]
 }
 ```
 
@@ -100,6 +102,14 @@ lb_health_check = {
   matcher             = "200-399"
   path                = "/health"
 }
+# Use var.lb_health_check (map) to customize health check parameters for target groups.
+# Example (optional):
+lb_health_check = {
+  interval            = 30
+  timeout             = 5
+  healthy_threshold   = 5
+  unhealthy_threshold = 2
+}
 
 # Custom tags
 listener_tags = {
@@ -117,6 +127,12 @@ tg_tags = {
 See `variables.tf` for all available variables and their descriptions.
 
 - `lb_domain`: The domain to use for ACM certificate lookup. If not set, defaults to `*.beigenecorp.net`. The module will automatically use the ACM certificate for this domain for HTTPS listeners unless you specify a certificate ARN directly.
+
+- `lb_health_check`: Optional map to customize target group health check parameters. Defaults are provided by the module.
+
+- `sg_rules_alb`: Optional list of security-group rule strings for ALB. If empty or not set, no SG ingress rules are created.
+
+- `lb_listener_ssl_policy`: If you set this variable to a non-null string it will be used. If left null and `lb_listener_protocol` is `HTTPS`, the module will choose a recommended default SSL policy automatically.
 
 ## Outputs
 - `LB_Details`: Map with LB ID, DNS, Name, Target Group IDs/Ports, Listener IDs/Ports
