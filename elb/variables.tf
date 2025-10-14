@@ -109,6 +109,19 @@ variable "lb_health_check_protocol" {
   description = "Protocol for health check (HTTP, HTTPS, TCP, etc.)"
 }
 
+variable "lb_health_check" {
+  type = map(any)
+  default = {
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+    matcher             = ""
+    path                = "/"
+  }
+  description = "Optional map to customize target group health check parameters. Keys: interval, timeout, healthy_threshold, unhealthy_threshold, matcher, path"
+}
+
 variable "lb_listener_protocol" {
   type    = string
   default = "HTTP"

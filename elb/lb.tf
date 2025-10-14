@@ -34,6 +34,14 @@ resource "aws_lb" "this" {
     health_check {
       port     = var.lb_target_group_port[count.index]
       protocol = var.lb_health_check_protocol
+      interval            = lookup(var.lb_health_check, "interval", 30)
+      timeout             = lookup(var.lb_health_check, "timeout", 5)
+      healthy_threshold   = lookup(var.lb_health_check, "healthy_threshold", 5)
+      unhealthy_threshold = lookup(var.lb_health_check, "unhealthy_threshold", 2)
+      # Note: HTTP/HTTPS-specific options like `path` and `matcher` are intentionally omitted here
+      # to keep the target group compatible with both ALB and NLB (TCP) target groups. If you need
+      # HTTP-specific health checks, override the resource in your deployment or modify this module
+      # to include `path`/`matcher` guarded by provider/version checks.
     }
     tags = merge({ Name = "${var.lb_name}-TG-${var.lb_target_group_port[count.index]}" }, local.common_tags)
   }
