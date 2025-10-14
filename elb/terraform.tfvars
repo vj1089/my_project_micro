@@ -28,7 +28,10 @@ lb_target_group_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP/UDP
 lb_target_type = "instance"         # For ALB: instance/ip, for NLB: instance/ip
 lb_health_check_protocol = "HTTP"   # For ALB: HTTP/HTTPS, for NLB: TCP
 lb_listener_protocol = "HTTPS"       # For ALB: HTTP/HTTPS, for NLB: TCP/TLS
-lb_listener_ssl_policy = lb_listener_protocol == "HTTPS" ? "ELBSecurityPolicy-TLS13-1-2-2021-06" : null # Recommended for HTTPS
-#lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
+# Use a literal value here. If null, the module will select a recommended default when protocol is HTTPS.
+lb_listener_ssl_policy = null
+# To use a specific ACM certificate, uncomment and set the ARN below. Otherwise the module will
+# attempt to find an ACM certificate for `lb_domain` (default: "*.beigenecorp.net").
+# lb_listener_certificate_arn = null   # For ALB HTTPS, e.g. "arn:aws:acm:..."
 # Domain for ACM certificate lookup (optional, default is *.beigenecorp.net)
-lb_domain = "*.beigenecorp.net" # For ALB HTTPS,
+lb_domain = "*.beigenecorp.net"
