@@ -75,3 +75,16 @@ application = "Infra"
 environment = "dev"
 department  = "GTS - Infrastructure & Operations"
 
+# Example security group rules (CSV format supported by module)
+# Format: "<port or port-range>,<protocol>,<source>,<description>"
+# Where <source> can be a CIDR (e.g. 10.8.0.0/24), a security-group id (sg-...), or a prefix-list id (pl-...)
+# Examples:
+# Single port + CIDR
+# sg_rules_ec2 = ["22,tcp,10.8.126.221/32,AWS WorkSpaces Vaibhav Jain"]
+# Mixed rules: CIDR, SG id, and prefix list
+# sg_rules_ec2 = [
+#   "22,tcp,10.8.126.221/32,AWS WorkSpaces Vaibhav Jain",
+#   "22,tcp,sg-0fcb234cc5d0621ab,Allow ansible SG",
+#   "8085-8088,tcp,pl-00a54069,Allow ansible prefix list"
+# ]
+

@@ -18,27 +18,67 @@ locals {
   sg_rules_parsed = [for r in var.sg_rules_ec2 : split(",", r)]
 }
 
-resource "aws_security_group_rule" "sg_lb_rule" {
-  count             = length(var.sg_rules_ec2)
-  type              = "ingress"
+locals {
+  # Map of parsed rules keyed by index (string) to make for_each selections easy
+  # normalize each parsed rule into an object with trimmed fields
+  sg_rules_map = {
+    for idx, parts in local.sg_rules_parsed : tostring(idx) => {
+      port_field  = trim(parts[0])
+      protocol    = trim(parts[1])
+      source      = length(parts) > 2 ? trim(parts[2]) : ""
+      description = length(parts) > 3 ? trim(parts[3]) : ""
+    }
+  }
 
-  # support single-port ("22") or port-range ("1024-2048") in field 0
-  from_port = tonumber(split("-", local.sg_rules_parsed[count.index][0])[0])
-  to_port   = tonumber(length(split("-", local.sg_rules_parsed[count.index][0])) > 1 ? split("-", local.sg_rules_parsed[count.index][0])[1] : split("-", local.sg_rules_parsed[count.index][0])[0])
+  cidr_rules = { for k, r in local.sg_rules_map : k => r if !(startswith(r.source, "sg-") || startswith(r.source, "pl-")) }
+  sgid_rules = { for k, r in local.sg_rules_map : k => r if startswith(r.source, "sg-") }
+  prefix_rules = { for k, r in local.sg_rules_map : k => r if startswith(r.source, "pl-") }
+}
 
-  protocol = local.sg_rules_parsed[count.index][1]
+resource "aws_security_group_rule" "cidr" {
+  for_each = local.cidr_rules
+  type     = "ingress"
 
-  # field 2 may be a CIDR, an SG id (sg-...) or a prefix list id (pl-...)
-  # set the appropriate attribute based on the prefix
-  cidr_blocks = (startswith(local.sg_rules_parsed[count.index][2], "sg-") || startswith(local.sg_rules_parsed[count.index][2], "pl-")) ? [] : [local.sg_rules_parsed[count.index][2]]
-  prefix_list_ids = startswith(local.sg_rules_parsed[count.index][2], "pl-") ? [local.sg_rules_parsed[count.index][2]] : []
-  source_security_group_id = startswith(local.sg_rules_parsed[count.index][2], "sg-") ? local.sg_rules_parsed[count.index][2] : null
+  from_port = tonumber(split("-", each.value.port_field)[0])
+  to_port   = tonumber(length(split("-", each.value.port_field)) > 1 ? split("-", each.value.port_field)[1] : split("-", each.value.port_field)[0])
+
+  protocol   = each.value.protocol
+  cidr_blocks = [each.value.source]
 
   security_group_id = aws_security_group.sg.id
+  description = length(each.value) > 3 ? each.value[3] : ""
 
-  description = length(local.sg_rules_parsed[count.index]) > 3 ? local.sg_rules_parsed[count.index][3] : ""
+  depends_on = [aws_security_group.sg]
+}
 
-  depends_on = [
-    aws_security_group.sg
-  ]
+resource "aws_security_group_rule" "sgid" {
+  for_each = local.sgid_rules
+  type     = "ingress"
+
+  from_port = tonumber(split("-", each.value.port_field)[0])
+  to_port   = tonumber(length(split("-", each.value.port_field)) > 1 ? split("-", each.value.port_field)[1] : split("-", each.value.port_field)[0])
+
+  protocol = each.value.protocol
+  source_security_group_id = each.value.source
+
+  security_group_id = aws_security_group.sg.id
+  description = length(each.value) > 3 ? each.value[3] : ""
+
+  depends_on = [aws_security_group.sg]
+}
+
+resource "aws_security_group_rule" "prefix" {
+  for_each = local.prefix_rules
+  type     = "ingress"
+
+  from_port = tonumber(split("-", each.value.port_field)[0])
+  to_port   = tonumber(length(split("-", each.value.port_field)) > 1 ? split("-", each.value.port_field)[1] : split("-", each.value.port_field)[0])
+
+  protocol = each.value.protocol
+  prefix_list_ids = [each.value.source]
+
+  security_group_id = aws_security_group.sg.id
+  description = each.value.description
+
+  depends_on = [aws_security_group.sg]
 }
