@@ -23,10 +23,10 @@ locals {
   # normalize each parsed rule into an object with trimmed fields
   sg_rules_map = {
     for idx, parts in local.sg_rules_parsed : tostring(idx) => {
-      port_field  = trim(parts[0])
-      protocol    = trim(parts[1])
-      source      = length(parts) > 2 ? trim(parts[2]) : ""
-      description = length(parts) > 3 ? trim(parts[3]) : ""
+      port_field  = trimspace(parts[0])
+      protocol    = trimspace(parts[1])
+      source      = length(parts) > 2 ? trimspace(parts[2]) : ""
+      description = length(parts) > 3 ? trimspace(parts[3]) : ""
     }
   }
 
