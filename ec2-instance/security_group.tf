@@ -46,7 +46,7 @@ resource "aws_security_group_rule" "cidr" {
   cidr_blocks = [each.value.source]
 
   security_group_id = aws_security_group.sg.id
-  description = length(each.value) > 3 ? each.value[3] : ""
+  description = each.value.description
 
   depends_on = [aws_security_group.sg]
 }
@@ -62,7 +62,7 @@ resource "aws_security_group_rule" "sgid" {
   source_security_group_id = each.value.source
 
   security_group_id = aws_security_group.sg.id
-  description = length(each.value) > 3 ? each.value[3] : ""
+  description = each.value.description
 
   depends_on = [aws_security_group.sg]
 }
