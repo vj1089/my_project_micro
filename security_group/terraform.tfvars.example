@@ -1,0 +1,154 @@
+# Example terraform.tfvars for security-group module
+# Copy this file to terraform.tfvars and edit values for your environment.
+
+# Required variables
+vpc_id = "vpc-abc123def456"  # VPC ID where security group will be created (REQUIRED)
+
+# Security Group naming (choose one approach)
+# Option 1: Use explicit name
+name = "my-app-sg-dev"
+
+# Option 2: Use name prefix (random suffix will be added)
+# name_prefix = "my-app-sg-"
+
+# Optional configuration
+description = "Security group for my application"  # Default: "Terraform managed security group"
+create_default_egress = true  # Default: true (allows all outbound traffic)
+
+# Tagging variables (recommended to provide for consistency)
+application = "my-application"
+environment = "dev"
+compliance = "Non-GxP"
+it_owner = "Your Name"
+BPO = "Business Process Owner"
+department = "GTS - Infrastructure & Operations"
+
+# Additional custom tags (optional)
+additional_tags = {
+  "Project" = "MyProject"
+  "Team"    = "DevOps"
+}
+
+# ==============================================
+# SECURITY RULES CONFIGURATION
+# ==============================================
+# You can use either list-based rules (CSV format) OR object-based rules
+# Choose one approach based on your preference
+
+# OPTION 1: List-based rules (CSV format) - Compatible with existing modules
+# Format: "port-or-range,protocol,source,description"
+# Where source can be:
+#   - CIDR block (e.g., "10.0.0.0/8", "192.168.1.0/24")
+#   - Security Group ID (e.g., "sg-123456789abcdef0")
+#   - Prefix List ID (e.g., "pl-123456789abcdef0")
+
+ingress_rules_list = [
+  "22,tcp,10.8.126.221/32,SSH access from admin workstation",
+  "80,tcp,0.0.0.0/0,HTTP access from anywhere",
+  "443,tcp,0.0.0.0/0,HTTPS access from anywhere",
+  "3306,tcp,sg-0123456789abcdef0,MySQL access from app security group",
+  "8080-8090,tcp,10.0.0.0/8,Application ports from internal network",
+  "53,udp,pl-0123456789abcdef0,DNS via prefix list"
+]
+
+# Custom egress rules (optional - only if create_default_egress = false)
+# egress_rules_list = [
+#   "443,tcp,0.0.0.0/0,HTTPS outbound",
+#   "80,tcp,0.0.0.0/0,HTTP outbound"
+# ]
+
+# OPTION 2: Object-based rules (more explicit and flexible)
+# Uncomment and use this approach if you prefer structured objects
+
+# ingress_rules = [
+#   {
+#     from_port   = 22
+#     to_port     = 22
+#     protocol    = "tcp"
+#     cidr_blocks = ["10.8.126.221/32"]
+#     description = "SSH access from admin workstation"
+#   },
+#   {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#     description = "HTTP access from anywhere"
+#   },
+#   {
+#     from_port                = 3306
+#     to_port                  = 3306
+#     protocol                 = "tcp"
+#     source_security_group_id = "sg-0123456789abcdef0"
+#     description              = "MySQL access from app security group"
+#   },
+#   {
+#     from_port       = 8080
+#     to_port         = 8090
+#     protocol        = "tcp"
+#     prefix_list_ids = ["pl-0123456789abcdef0"]
+#     description     = "Application ports via prefix list"
+#   },
+#   {
+#     from_port   = 443
+#     to_port     = 443
+#     protocol    = "tcp"
+#     self        = true
+#     description = "HTTPS access within same security group"
+#   }
+# ]
+
+# egress_rules = [
+#   {
+#     from_port   = 443
+#     to_port     = 443
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#     description = "HTTPS outbound"
+#   },
+#   {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#     description = "HTTP outbound"
+#   }
+# ]
+
+# ==============================================
+# USAGE EXAMPLES
+# ==============================================
+
+# Example 1: Web server security group
+# name = "web-server-sg-dev"
+# ingress_rules_list = [
+#   "80,tcp,0.0.0.0/0,HTTP from internet",
+#   "443,tcp,0.0.0.0/0,HTTPS from internet",
+#   "22,tcp,10.0.0.0/8,SSH from internal network"
+# ]
+
+# Example 2: Database security group
+# name = "database-sg-dev"
+# ingress_rules_list = [
+#   "3306,tcp,sg-webapp123,MySQL from web app SG",
+#   "3306,tcp,sg-admin456,MySQL from admin SG"
+# ]
+# create_default_egress = false
+# egress_rules_list = [
+#   "443,tcp,0.0.0.0/0,HTTPS for updates"
+# ]
+
+# Example 3: Application load balancer security group
+# name = "alb-sg-prod"
+# ingress_rules_list = [
+#   "80,tcp,0.0.0.0/0,HTTP from internet",
+#   "443,tcp,0.0.0.0/0,HTTPS from internet"
+# ]
+
+# Example 4: Mixed source types
+# ingress_rules_list = [
+#   "22,tcp,192.168.1.100/32,SSH from jump host",
+#   "3389,tcp,sg-0123456789abcdef0,RDP from admin SG",
+#   "443,tcp,pl-0123456789abcdef0,HTTPS via prefix list",
+#   "8080-8085,tcp,10.0.0.0/16,App ports from VPC"
+# ]

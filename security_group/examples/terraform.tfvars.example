@@ -1,0 +1,7 @@
+# Example terraform.tfvars for security group examples
+
+# Replace with your actual VPC ID
+vpc_id = "vpc-0123456789abcdef0"
+
+# AWS region
+region = "us-west-2"
