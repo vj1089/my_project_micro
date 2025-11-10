@@ -30,6 +30,7 @@ variable "vpc_id" {
 module "web_security_group" {
   source = "../"
 
+  region      = var.region
   name        = "web-server-sg-example"
   description = "Security group for web servers"
   vpc_id      = var.vpc_id
@@ -58,7 +59,8 @@ module "web_security_group" {
 module "database_security_group" {
   source = "../"
 
-  name_prefix           = "database-sg-"
+  region               = var.region
+  name_prefix          = "database-sg-"
   description          = "Security group for database servers"
   vpc_id               = var.vpc_id
   create_default_egress = false
@@ -110,6 +112,7 @@ module "database_security_group" {
 module "alb_security_group" {
   source = "../"
 
+  region      = var.region
   name        = "alb-sg-example"
   description = "Security group for Application Load Balancer"
   vpc_id      = var.vpc_id

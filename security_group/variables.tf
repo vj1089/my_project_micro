@@ -1,5 +1,11 @@
 # Variables for Security Group Module
 
+# Region Configuration
+variable "region" {
+  description = "AWS region where the security group will be created"
+  type        = string
+}
+
 # Basic Security Group Configuration
 variable "name" {
   description = "Name of the security group. If provided, takes precedence over name_prefix"

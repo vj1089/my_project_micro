@@ -2,7 +2,8 @@
 # Copy this file to terraform.tfvars and edit values for your environment.
 
 # Required variables
-vpc_id = "vpc-abc123def456"  # VPC ID where security group will be created (REQUIRED)
+region = "us-west-2"                         # AWS region (REQUIRED)
+vpc_id = "vpc-abc123def456"                  # VPC ID where security group will be created (REQUIRED)
 
 # Security Group naming (choose one approach)
 # Option 1: Use explicit name

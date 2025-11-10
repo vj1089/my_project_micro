@@ -19,6 +19,7 @@ This Terraform module creates AWS Security Groups with flexible ingress and egre
 module "web_security_group" {
   source = "./security_group"
 
+  region      = "us-west-2"
   name        = "web-server-sg-dev"
   description = "Security group for web servers"
   vpc_id      = "vpc-abc123def456"
@@ -42,6 +43,7 @@ module "web_security_group" {
 module "database_security_group" {
   source = "./security_group"
 
+  region      = var.region
   name_prefix = "database-sg-"
   description = "Security group for database servers"
   vpc_id      = var.vpc_id
@@ -133,6 +135,7 @@ The module automatically detects source types in CSV format:
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| region | AWS region where the security group will be created | `string` | n/a | yes |
 | vpc_id | VPC ID where the security group will be created | `string` | n/a | yes |
 | name | Name of the security group | `string` | `""` | no |
 | name_prefix | Name prefix for the security group (random suffix added) | `string` | `""` | no |
@@ -170,6 +173,7 @@ The module automatically detects source types in CSV format:
 module "web_sg" {
   source = "./security_group"
   
+  region = var.region
   name   = "web-server-sg-${var.environment}"
   vpc_id = var.vpc_id
   
@@ -187,6 +191,7 @@ module "web_sg" {
 module "db_sg" {
   source = "./security_group"
   
+  region                = var.region
   name                  = "database-sg-${var.environment}"
   vpc_id                = var.vpc_id
   create_default_egress = false
@@ -207,6 +212,7 @@ module "db_sg" {
 module "alb_sg" {
   source = "./security_group"
   
+  region = var.region
   name   = "alb-sg-${var.environment}"
   vpc_id = var.vpc_id
   
@@ -223,6 +229,7 @@ module "alb_sg" {
 module "app_sg" {
   source = "./security_group"
   
+  region = var.region
   name   = "application-sg-${var.environment}"
   vpc_id = var.vpc_id
   
