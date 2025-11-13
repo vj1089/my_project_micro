@@ -1,0 +1,373 @@
+# ============================================
+# Multi-Resource Deployment Configuration
+# ============================================
+# This YAML file defines ALL AWS resources to be deployed.
+# Add new resource types as needed - the framework is extensible.
+
+# ============================================
+# Global/Common Configuration
+# ============================================
+common:
+  region: "us-west-2"
+  vpc_id: "vpc-abc123"
+  environment: "prod"
+  account_id: "123456789012"
+  
+  # Common tags applied to ALL resources
+  common_tags:
+    it_owner: "Platform Team"
+    department: "GTS - Infrastructure & Operations"
+    managed_by: "Terraform"
+    project: "Multi-Tier Application"
+    environment: "prod"
+
+# ============================================
+# EC2 Instances
+# ============================================
+ec2_instances:
+  web-server-01:
+    enabled: true
+    instance_name: "web-server-01"
+    ami_id: "ami-0123456789abcdef0"
+    instance_type: "t3.medium"
+    key_name: "my-keypair"
+    subnet_id: "subnet-web-1"
+    os_type: "linux"
+    root_vol_size: "100"
+    instance_role: "AmazonSSMRoleForInstancesQuickSetup"
+    
+    tags:
+      Name: "web-server-01"
+      BPO: "Web Team Lead"
+      compliance: "Non-GxP"
+      RPO: 24
+      RTO: 24
+      application: "WebApp"
+      tier: "web"
+    
+    security_group_rules:
+      - "80,tcp,0.0.0.0/0,HTTP from Internet"
+      - "443,tcp,0.0.0.0/0,HTTPS from Internet"
+      - "22,tcp,10.0.0.0/8,SSH from Internal"
+  
+  app-server-01:
+    enabled: true
+    instance_name: "app-server-01"
+    ami_id: "ami-0123456789abcdef0"
+    instance_type: "t3.large"
+    key_name: "my-keypair"
+    subnet_id: "subnet-app-1"
+    os_type: "linux"
+    root_vol_size: "200"
+    instance_role: "AmazonSSMRoleForInstancesQuickSetup"
+    
+    tags:
+      Name: "app-server-01"
+      BPO: "App Team Lead"
+      compliance: "GxP"
+      RPO: 12
+      RTO: 12
+      application: "CoreApp"
+      tier: "application"
+    
+    security_group_rules:
+      - "8080,tcp,sg-web-tier,From Web Tier"
+      - "22,tcp,10.0.0.0/8,SSH from Internal"
+  
+  app-server-02:
+    enabled: true
+    instance_name: "app-server-02"
+    ami_id: "ami-0123456789abcdef0"
+    instance_type: "t3.large"
+    key_name: "my-keypair"
+    subnet_id: "subnet-app-2"
+    os_type: "linux"
+    root_vol_size: "200"
+    instance_role: "AmazonSSMRoleForInstancesQuickSetup"
+    
+    tags:
+      Name: "app-server-02"
+      BPO: "App Team Lead"
+      compliance: "GxP"
+      RPO: 12
+      RTO: 12
+      application: "CoreApp"
+      tier: "application"
+    
+    security_group_rules:
+      - "8080,tcp,sg-web-tier,From Web Tier"
+      - "22,tcp,10.0.0.0/8,SSH from Internal"
+
+# ============================================
+# RDS Databases
+# ============================================
+rds_instances:
+  mysql-primary:
+    enabled: true
+    identifier: "app-mysql-primary"
+    engine: "mysql"
+    engine_version: "8.0.35"
+    instance_class: "db.r5.xlarge"
+    allocated_storage: 500
+    storage_type: "gp3"
+    storage_encrypted: true
+    
+    database_name: "appdb"
+    master_username: "admin"
+    # master_password supplied via Harness secrets
+    
+    subnet_ids:
+      - "subnet-db-1"
+      - "subnet-db-2"
+    
+    backup_retention_period: 7
+    preferred_backup_window: "03:00-04:00"
+    preferred_maintenance_window: "sun:04:00-sun:05:00"
+    
+    multi_az: true
+    publicly_accessible: false
+    
+    tags:
+      Name: "mysql-primary"
+      BPO: "Database Team"
+      compliance: "GxP"
+      RPO: 6
+      RTO: 6
+      application: "CoreApp"
+      tier: "database"
+    
+    security_group_rules:
+      - "3306,tcp,sg-app-tier,From App Tier"
+  
+  postgres-analytics:
+    enabled: false  # Not deploying yet
+    identifier: "analytics-postgres"
+    engine: "postgres"
+    engine_version: "15.4"
+    instance_class: "db.r5.large"
+    allocated_storage: 200
+    
+    tags:
+      Name: "postgres-analytics"
+      application: "Analytics"
+      tier: "database"
+
+# ============================================
+# Application Load Balancers (ALB)
+# ============================================
+load_balancers:
+  web-alb:
+    enabled: true
+    name: "web-tier-alb"
+    internal: false
+    load_balancer_type: "application"
+    
+    subnet_ids:
+      - "subnet-public-1"
+      - "subnet-public-2"
+    
+    target_group:
+      name: "web-tier-tg"
+      port: 80
+      protocol: "HTTP"
+      target_type: "instance"
+      health_check:
+        enabled: true
+        path: "/health"
+        interval: 30
+        timeout: 5
+        healthy_threshold: 2
+        unhealthy_threshold: 2
+      
+      # Reference EC2 instances by key
+      targets:
+        - instance_key: "web-server-01"
+          port: 80
+    
+    tags:
+      Name: "web-tier-alb"
+      BPO: "Platform Team"
+      compliance: "Non-GxP"
+      RPO: 24
+      RTO: 24
+      application: "WebApp"
+      tier: "web"
+    
+    security_group_rules:
+      - "80,tcp,0.0.0.0/0,HTTP from Internet"
+      - "443,tcp,0.0.0.0/0,HTTPS from Internet"
+  
+  internal-alb:
+    enabled: true
+    name: "app-tier-alb"
+    internal: true
+    load_balancer_type: "application"
+    
+    subnet_ids:
+      - "subnet-app-1"
+      - "subnet-app-2"
+    
+    target_group:
+      name: "app-tier-tg"
+      port: 8080
+      protocol: "HTTP"
+      target_type: "instance"
+      health_check:
+        enabled: true
+        path: "/actuator/health"
+        interval: 30
+      
+      targets:
+        - instance_key: "app-server-01"
+          port: 8080
+        - instance_key: "app-server-02"
+          port: 8080
+    
+    tags:
+      Name: "app-tier-alb"
+      tier: "application"
+
+# ============================================
+# EKS Clusters (Future - Example structure)
+# ============================================
+eks_clusters:
+  main-cluster:
+    enabled: false  # Set to true when ready to deploy
+    cluster_name: "app-eks-cluster"
+    cluster_version: "1.28"
+    
+    subnet_ids:
+      - "subnet-eks-1"
+      - "subnet-eks-2"
+      - "subnet-eks-3"
+    
+    node_groups:
+      - name: "app-nodes"
+        instance_types: ["t3.large"]
+        desired_size: 3
+        min_size: 2
+        max_size: 5
+        disk_size: 100
+    
+    tags:
+      Name: "app-eks-cluster"
+      BPO: "Platform Team"
+      compliance: "GxP"
+      application: "Kubernetes"
+
+# ============================================
+# ECS Clusters (Future - Example structure)
+# ============================================
+ecs_clusters:
+  app-cluster:
+    enabled: false
+    cluster_name: "app-ecs-cluster"
+    capacity_providers:
+      - "FARGATE"
+      - "FARGATE_SPOT"
+    
+    services:
+      - name: "web-service"
+        task_definition: "web-task"
+        desired_count: 2
+        launch_type: "FARGATE"
+        subnet_ids:
+          - "subnet-ecs-1"
+          - "subnet-ecs-2"
+    
+    tags:
+      Name: "app-ecs-cluster"
+      tier: "container"
+
+# ============================================
+# EFS File Systems (Future - Example structure)
+# ============================================
+efs_filesystems:
+  shared-storage:
+    enabled: false
+    name: "app-shared-storage"
+    performance_mode: "generalPurpose"
+    throughput_mode: "bursting"
+    encrypted: true
+    
+    mount_targets:
+      - subnet_id: "subnet-app-1"
+      - subnet_id: "subnet-app-2"
+    
+    tags:
+      Name: "app-shared-storage"
+      tier: "storage"
+
+# ============================================
+# Lambda Functions (Future - Example structure)
+# ============================================
+lambda_functions:
+  api-handler:
+    enabled: false
+    function_name: "api-handler"
+    runtime: "python3.11"
+    handler: "index.lambda_handler"
+    memory_size: 512
+    timeout: 30
+    
+    environment_variables:
+      DB_HOST: "mysql-primary.endpoint"  # Can reference RDS
+      ENV: "prod"
+    
+    subnet_ids:
+      - "subnet-lambda-1"
+      - "subnet-lambda-2"
+    
+    tags:
+      Name: "api-handler"
+      tier: "serverless"
+
+# ============================================
+# S3 Buckets (Future - Example structure)
+# ============================================
+s3_buckets:
+  app-data:
+    enabled: false
+    bucket_name: "app-data-prod-${account_id}"
+    versioning: true
+    encryption: "AES256"
+    
+    lifecycle_rules:
+      - id: "archive-old-data"
+        enabled: true
+        transition_days: 90
+        storage_class: "GLACIER"
+    
+    tags:
+      Name: "app-data-bucket"
+      tier: "storage"
+
+# ============================================
+# Security Groups (Shared)
+# ============================================
+security_groups:
+  bastion-sg:
+    enabled: false
+    name: "bastion-sg"
+    description: "Security group for bastion hosts"
+    
+    ingress_rules:
+      - "22,tcp,10.0.0.0/8,SSH from Corporate"
+    
+    egress_rules:
+      - "0,all,0.0.0.0/0,All outbound"
+    
+    tags:
+      Name: "bastion-sg"
+
+# ============================================
+# CloudWatch Log Groups (Future)
+# ============================================
+cloudwatch_log_groups:
+  app-logs:
+    enabled: false
+    name: "/aws/app/logs"
+    retention_days: 30
+    
+    tags:
+      Name: "app-logs"
