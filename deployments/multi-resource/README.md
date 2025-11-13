@@ -6,6 +6,7 @@ A flexible, YAML-driven Terraform/OpenTofu framework for deploying multiple AWS 
 
 ## 🎯 Features
 
+- **🎨 Web-Based YAML Generator**: Point-and-click interface for creating resources.yaml - **no coding required!**
 - **YAML-Driven Configuration**: Define all resources in a single, easy-to-read YAML file
 - **Multi-Resource Support**: Deploy EC2, RDS, ALB, and easily add more resource types
 - **Extensible Architecture**: Framework designed to accommodate future resource types (EKS, ECS, EFS, Lambda, S3, etc.)
@@ -14,22 +15,49 @@ A flexible, YAML-driven Terraform/OpenTofu framework for deploying multiple AWS 
 - **Cross-Resource References**: Resources can reference each other (e.g., ALB targets EC2 instances)
 - **Harness Native**: Built for Harness with secrets management and variable support
 - **Environment-Aware**: Support multiple environments with different configurations
+- **Module Source Flexibility**: Single variable to switch between local and remote modules
 
 ## 📁 Structure
 
 ```
 multi-resource/
+├── yaml-generator.html     # 🆕 Web-based YAML generator (no coding needed!)
 ├── resources.yaml          # YAML configuration for all resources
 ├── main.tf                 # Dynamic resource orchestration
 ├── variables.tf            # Variable definitions
 ├── provider.tf             # AWS provider and backend config
 ├── outputs.tf              # Dynamic outputs for all resources
 ├── README.md               # This file
-├── USAGE.md                # Detailed usage guide
-└── EXTENDING.md            # Guide for adding new resource types
+├── QUICK_REFERENCE.md      # Quick command reference
+├── MODULE_SOURCE_UPDATE.md # Module source configuration guide
+├── GETTING_STARTED.md      # Getting started guide
+├── EXTENDING.md            # Guide for adding new resource types
+├── HARNESS_INTEGRATION.md  # Harness pipeline setup
+└── EXAMPLES.md             # Real-world usage examples
 ```
 
 ## 🚀 Quick Start
+
+### Easy Way: Use the Web Generator (No YAML Knowledge Required!)
+
+Open `yaml-generator.html` in your web browser for a **point-and-click interface**:
+
+```bash
+# Just open the file in any browser
+start yaml-generator.html   # Windows
+open yaml-generator.html    # Mac
+xdg-open yaml-generator.html  # Linux
+```
+
+**Features:**
+- ✅ No coding knowledge required
+- ✅ Visual form-based interface
+- ✅ Real-time YAML preview
+- ✅ Dropdown menus for all options
+- ✅ One-click download
+- ✅ Copy to clipboard
+
+### Advanced Way: Edit YAML Directly
 
 ### 1. Configure Resources
 
@@ -239,6 +267,7 @@ That's it! See [EXTENDING.md](./EXTENDING.md) for detailed guide.
 
 ## 📚 Documentation
 
+- **[YAML_GENERATOR_GUIDE.md](./YAML_GENERATOR_GUIDE.md)** - 🎨 Complete guide to the web-based YAML generator
 - **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - ⚡ Quick command reference and common patterns
 - **[MODULE_SOURCE_UPDATE.md](./MODULE_SOURCE_UPDATE.md)** - 📘 Complete guide to module source configuration
 - **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Quick start summary with examples
