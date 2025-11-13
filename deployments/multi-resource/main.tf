@@ -115,10 +115,16 @@ locals {
 # ============================================
 # EC2 Instances
 # ============================================
+# NOTE: Module source cannot use variables in Terraform.
+# To use remote modules, modify the source path directly:
+#   - Local: "../../ec2-instance"
+#   - Git: "git::https://github.com/org/modules.git//aws/ec2-instance?ref=v1.0.0"
+#   - Registry: "app.terraform.io/org/ec2-instance/aws"
+
 module "ec2_instances" {
   for_each = local.merged_ec2_configs
   
-  source = "${var.module_source_prefix}/ec2-instance"
+  source = "../../ec2-instance"
   
   # Instance configuration
   instance_name     = each.value.instance_name
@@ -159,7 +165,7 @@ module "ec2_instances" {
 module "rds_instances" {
   for_each = local.merged_rds_configs
   
-  source = "${var.module_source_prefix}/rds"
+  source = "../../rds"
   
   # Basic configuration (mapped to your RDS module variables)
   db_name            = each.value.identifier
@@ -202,7 +208,7 @@ module "rds_instances" {
 module "load_balancers" {
   for_each = local.merged_alb_configs
   
-  source = "${var.module_source_prefix}/elb"
+  source = "../../elb"
   
   # Basic configuration (mapped to your ELB module variables)
   lb_name            = each.value.name
@@ -256,7 +262,7 @@ module "load_balancers" {
 # module "eks_clusters" {
 #   for_each = local.merged_eks_configs
 #   
-#   source = "${var.module_source_prefix}/eks"
+#   source = "../../eks"
 #   
 #   cluster_name    = each.value.cluster_name
 #   cluster_version = each.value.cluster_version
@@ -276,7 +282,7 @@ module "load_balancers" {
 # module "ecs_clusters" {
 #   for_each = local.merged_ecs_configs
 #   
-#   source = "${var.module_source_prefix}/ecs"
+#   source = "../../ecs"
 #   
 #   cluster_name       = each.value.cluster_name
 #   capacity_providers = each.value.capacity_providers
@@ -290,7 +296,7 @@ module "load_balancers" {
 # module "efs_filesystems" {
 #   for_each = local.merged_efs_configs
 #   
-#   source = "${var.module_source_prefix}/efs"
+#   source = "../../efs"
 #   
 #   name             = each.value.name
 #   performance_mode = each.value.performance_mode
@@ -308,7 +314,7 @@ module "load_balancers" {
 # module "lambda_functions" {
 #   for_each = local.merged_lambda_configs
 #   
-#   source = "${var.module_source_prefix}/lambda"
+#   source = "../../lambda"
 #   
 #   function_name = each.value.function_name
 #   runtime       = each.value.runtime
@@ -327,7 +333,7 @@ module "load_balancers" {
 # module "s3_buckets" {
 #   for_each = local.merged_s3_configs
 #   
-#   source = "${var.module_source_prefix}/s3"
+#   source = "../../s3"
 #   
 #   bucket_name = replace(each.value.bucket_name, "${account_id}", local.common.account_id)
 #   versioning  = each.value.versioning

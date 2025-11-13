@@ -2,14 +2,18 @@
 # Multi-Resource Deployment Variables
 # ============================================
 
-# ============================================
-# Module Source Prefix
-# ============================================
-variable "module_source_prefix" {
-  type        = string
-  description = "Prefix for all module sources. Can be local path (../..) or remote (git::https://..., app.terraform.io/org/, etc.)"
-  default     = "../.."
-}
+# NOTE: Terraform does not support variables in module source paths.
+# To change module sources, directly edit the source paths in main.tf
+# 
+# For local modules:     source = "../../ec2-instance"
+# For Git:              source = "git::https://github.com/org/modules.git//aws/ec2-instance?ref=v1.0.0"
+# For Terraform Cloud:  source = "app.terraform.io/org/ec2-instance/aws"
+# For S3:               source = "s3::https://s3.amazonaws.com/modules/ec2-instance"
+#
+# To switch between environments:
+#   - Use different deployment directories (dev/, staging/, prod/)
+#   - Each can have main.tf with appropriate module sources
+#   - Share the same resources.yaml configuration
 
 # ============================================
 # Configuration File Override
