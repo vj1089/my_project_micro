@@ -2,6 +2,8 @@
 
 This guide explains how to add new AWS resource types to the framework. The architecture is designed to make adding new resources straightforward and consistent.
 
+> **💡 Note**: This guide applies to both Terraform and OpenTofu - the HCL syntax is identical for both tools.
+
 ## 🏗️ Architecture Overview
 
 The framework follows a simple pattern:

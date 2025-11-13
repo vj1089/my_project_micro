@@ -1,6 +1,8 @@
 # Multi-Resource Deployment Framework
 
-A flexible, YAML-driven Terraform framework for deploying multiple AWS resources (EC2, RDS, ALB, EKS, ECS, etc.) in a single deployment. Designed for seamless integration with Harness CI/CD.
+A flexible, YAML-driven Terraform/OpenTofu framework for deploying multiple AWS resources (EC2, RDS, ALB, EKS, ECS, etc.) in a single deployment. Designed for seamless integration with Harness CI/CD.
+
+> **🎉 Fully Compatible with OpenTofu!** This framework works with both Terraform and OpenTofu without any code changes.
 
 ## 🎯 Features
 
@@ -61,17 +63,25 @@ load_balancers:
     # ... more config
 ```
 
-### 2. Deploy with Terraform
+### 2. Deploy with Terraform or OpenTofu
 
+**Using Terraform:**
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
 
+**Using OpenTofu:**
+```bash
+tofu init
+tofu plan
+tofu apply
+```
+
 ### 3. Deploy with Harness
 
-See [HARNESS_INTEGRATION.md](./HARNESS_INTEGRATION.md) for detailed pipeline configuration.
+See [HARNESS_INTEGRATION.md](./HARNESS_INTEGRATION.md) for detailed pipeline configuration (supports both Terraform and OpenTofu).
 
 ## 📋 Supported Resource Types
 
@@ -249,7 +259,8 @@ To add support for a new AWS resource type:
 - **State Management**: Always use remote state (S3) for production deployments
 - **Secrets**: Never commit sensitive values to the YAML file
 - **Module Compatibility**: Ensure your existing modules match the variable names used in `main.tf`
-- **Resource Dependencies**: Terraform automatically handles dependencies between resources
+- **Resource Dependencies**: Terraform/OpenTofu automatically handles dependencies between resources
+- **OpenTofu Compatible**: Framework works with both Terraform and OpenTofu - just change the CLI command or Harness step type
 
 ## 🐛 Troubleshooting
 

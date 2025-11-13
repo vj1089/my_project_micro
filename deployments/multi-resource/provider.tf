@@ -1,9 +1,10 @@
 terraform {
+  # Compatible with both Terraform 1.0+ and OpenTofu 1.6+
   required_version = ">= 1.0"
   
   required_providers {
     aws = {
-      source  = "hashicorp/aws"
+      source  = "hashicorp/aws"  # Works with both Terraform and OpenTofu
       version = "~> 5.0"
     }
   }

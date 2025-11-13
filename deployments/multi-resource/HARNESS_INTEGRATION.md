@@ -1,6 +1,8 @@
 # Harness Integration Guide
 
-Complete guide for deploying the multi-resource framework with Harness CD.
+Complete guide for deploying the multi-resource framework with Harness CD using Terraform or OpenTofu.
+
+> **💡 OpenTofu Support**: This guide covers both Terraform and OpenTofu. Simply use `OpenTofuPlan` and `OpenTofuApply` steps instead of `TerraformPlan` and `TerraformApply` for OpenTofu.
 
 ## 🎯 Overview
 
@@ -15,10 +17,10 @@ The multi-resource framework integrates seamlessly with Harness, providing:
 
 Before setting up Harness integration:
 
-1. ✅ Harness account with Terraform provisioner enabled
+1. ✅ Harness account with Terraform or OpenTofu provisioner enabled
 2. ✅ AWS connector configured in Harness
 3. ✅ GitHub connector (if storing code in GitHub)
-4. ✅ S3 bucket for Terraform state
+4. ✅ S3 bucket for Terraform/OpenTofu state
 5. ✅ DynamoDB table for state locking (recommended)
 6. ✅ Harness secrets created for sensitive values
 
@@ -47,12 +49,14 @@ Create a secret for each RDS instance:
 
 ## 🏗️ Step 2: Create Harness Pipeline
 
-### Basic Pipeline Structure
+### Basic Pipeline Structure (Terraform)
+
+**For Terraform:**
 
 ```yaml
 pipeline:
-  name: Multi-Resource Deployment
-  identifier: multi_resource_deployment
+  name: Multi-Resource Deployment (Terraform)
+  identifier: multi_resource_deployment_tf
   projectIdentifier: your_project
   orgIdentifier: default
   tags: {}
@@ -221,6 +225,101 @@ pipeline:
       description: Require manual approval before apply
       required: false
       value: "true"
+```
+
+### Basic Pipeline Structure (OpenTofu)
+
+**For OpenTofu (just change step types):**
+
+```yaml
+pipeline:
+  name: Multi-Resource Deployment (OpenTofu)
+  identifier: multi_resource_deployment_tofu
+  projectIdentifier: your_project
+  orgIdentifier: default
+  tags: {}
+  
+  stages:
+    - stage:
+        name: Deploy Infrastructure
+        identifier: deploy_infra
+        type: Custom
+        spec:
+          execution:
+            steps:
+              # Step 1: OpenTofu Plan
+              - step:
+                  type: OpenTofuPlan  # ← Changed from TerraformPlan
+                  name: Plan Multi-Resource Stack
+                  identifier: plan_resources
+                  spec:
+                    provisionerIdentifier: multi_resource_stack
+                    configuration:
+                      command: Apply
+                      workspace: <+pipeline.variables.environment>
+                      configFiles:
+                        store:
+                          type: Github
+                          spec:
+                            gitFetchType: Branch
+                            branch: main
+                            folderPath: deployments/multi-resource
+                            connectorRef: <+input>
+                        moduleSource:
+                          useConnectorCredentials: true
+                      secretManagerRef: account.harnessSecretManager
+                      backendConfig:
+                        type: Inline
+                        spec:
+                          content: |
+                            bucket         = "<+pipeline.variables.tf_state_bucket>"
+                            key            = "multi-resource/<+pipeline.variables.environment>/terraform.tfstate"
+                            region         = "<+pipeline.variables.region>"
+                            encrypt        = true
+                            dynamodb_table = "<+pipeline.variables.tf_lock_table>"
+                      varFiles:
+                        - varFile:
+                            type: Inline
+                            identifier: secrets
+                            spec:
+                              content: |-
+                                rds_passwords = {
+                                  "mysql-primary" = "<+secrets.getValue('mysql_primary_password')>"
+                                }
+                                kms_key_arn = "<+secrets.getValue('kms_key_arn')>"
+                                deployment_id = "<+pipeline.executionId>"
+                  timeout: 15m
+              
+              - step:
+                  type: HarnessApproval
+                  name: Approve Deployment
+                  # ... same as Terraform version
+              
+              - step:
+                  type: OpenTofuApply  # ← Changed from TerraformApply
+                  name: Apply Multi-Resource Stack
+                  identifier: apply_resources
+                  spec:
+                    provisionerIdentifier: multi_resource_stack
+                    configuration:
+                      type: InheritFromPlan
+                  timeout: 30m
+  
+  # Variables are identical to Terraform version
+  variables:
+    - name: environment
+      type: String
+      value: <+input>.default(dev).allowedValues(dev,staging,prod)
+    # ... rest of variables same as Terraform
+```
+
+> **Note**: The only difference between Terraform and OpenTofu pipelines is the step type:
+> - Terraform: `TerraformPlan` and `TerraformApply`
+> - OpenTofu: `OpenTofuPlan` and `OpenTofuApply`
+> 
+> All other configuration (configFiles, varFiles, backendConfig, etc.) is identical.
+
+## 🌍 Step 3: Environment Configuration
     
     - name: resources_config_file
       type: String
@@ -448,11 +547,25 @@ trigger:
     pipelineIdentifier: multi_resource_deployment
 ```
 
-## 🛡️ Best Practices
+## � Terraform vs OpenTofu in Harness
+
+| Feature | Terraform | OpenTofu | Notes |
+|---------|-----------|----------|-------|
+| **Harness Step Type** | `TerraformPlan/Apply` | `OpenTofuPlan/Apply` | Only difference |
+| **HCL Syntax** | ✅ Same | ✅ Same | No code changes needed |
+| **State Format** | ✅ Compatible | ✅ Compatible | Can migrate between them |
+| **AWS Provider** | ✅ Same | ✅ Same | Uses same providers |
+| **YAML Parsing** | ✅ Same | ✅ Same | Framework unchanged |
+| **Harness Secrets** | ✅ Same | ✅ Same | Works identically |
+| **Backend (S3)** | ✅ Same | ✅ Same | Same configuration |
+
+**Bottom Line**: Choose either tool - the framework works perfectly with both! 🎉
+
+## �🛡️ Best Practices
 
 ### 1. Always Use Remote State
 
-Never use local state for Harness deployments:
+Never use local state for Harness deployments (works for both Terraform and OpenTofu):
 ```hcl
 backend "s3" {
   bucket         = "your-terraform-state-bucket"
@@ -507,6 +620,13 @@ For production resources, enable deletion protection:
 lb_enable_deletion_protection = true
 ```
 
+### 9. Choose Terraform or OpenTofu
+
+Both work identically with this framework:
+- **Terraform**: Enterprise support, established tool
+- **OpenTofu**: Open source, community-driven, vendor-neutral
+- **Switch anytime**: Just change Harness step type - no code changes needed!
+
 ## 🐛 Troubleshooting
 
 ### Issue: "Backend configuration changed"
@@ -544,9 +664,14 @@ terraform force-unlock <lock-id>
 
 For Harness-specific questions:
 - Harness Documentation: https://developer.harness.io
+- Harness OpenTofu Docs: https://developer.harness.io/docs/continuous-delivery/cd-infrastructure/opentofu-infra/
 - Internal Slack: #harness-support
 - Infrastructure Team: #infra-terraform
 
 For framework questions:
 - See [README.md](./README.md)
 - See [EXTENDING.md](./EXTENDING.md)
+
+For OpenTofu:
+- OpenTofu Documentation: https://opentofu.org/docs/
+- OpenTofu Installation: https://opentofu.org/docs/intro/install/

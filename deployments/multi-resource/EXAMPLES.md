@@ -2,6 +2,8 @@
 
 Common deployment scenarios using the multi-resource framework.
 
+> **💡 Works with Terraform and OpenTofu**: All examples work identically with both tools. Just use `terraform` or `tofu` CLI commands.
+
 ## Example 1: Simple Web Application Stack
 
 Deploy a web server, application server, database, and load balancer.
@@ -88,10 +90,18 @@ load_balancers:
 
 ### Deploy
 
+**With Terraform:**
 ```bash
 terraform init
 terraform plan
 terraform apply -auto-approve
+```
+
+**With OpenTofu:**
+```bash
+tofu init
+tofu plan
+tofu apply -auto-approve
 ```
 
 ---
@@ -239,8 +249,14 @@ load_balancers:
 
 ### Deploy
 
+**With Terraform:**
 ```bash
 terraform apply -var="resources_config_file=resources-dev.yaml"
+```
+
+**With OpenTofu:**
+```bash
+tofu apply -var="resources_config_file=resources-dev.yaml"
 ```
 
 ---

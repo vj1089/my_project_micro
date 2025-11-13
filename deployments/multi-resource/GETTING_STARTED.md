@@ -2,7 +2,9 @@
 
 ## 🎉 What Has Been Created
 
-A complete, production-ready, extensible Terraform framework for deploying multiple AWS resources using YAML configuration, fully integrated with Harness CI/CD.
+A complete, production-ready, extensible Terraform/OpenTofu framework for deploying multiple AWS resources using YAML configuration, fully integrated with Harness CI/CD.
+
+> **🚀 Works with Both Terraform and OpenTofu!** Choose the tool you prefer - the framework is fully compatible with both.
 
 ## 📁 Created Files
 
@@ -178,12 +180,13 @@ Configure environment overrides in Harness for automatic variable substitution.
 ## 🔐 Security Features
 
 - ✅ Secrets managed via Harness Secret Manager
-- ✅ State encryption in S3
+- ✅ State encryption in S3 (Terraform/OpenTofu)
 - ✅ State locking with DynamoDB
 - ✅ KMS encryption for EBS volumes
 - ✅ Security group rules defined in YAML
 - ✅ IMDSv2 enforced on EC2 instances
 - ✅ Encrypted RDS storage
+- ✅ Tool agnostic - works with Terraform or OpenTofu
 
 ## 📈 Outputs Available
 
@@ -294,22 +297,24 @@ See [EXTENDING.md](./EXTENDING.md) for complete guide.
 - ✅ Feature flags for resource types
 - ✅ Deployment metadata tracking
 
-## 🎓 Learning Resources
+## 🎓 **Learning Resources**
 
-### For Terraform
+### For Terraform/OpenTofu
 - Variables with `try()` for optional fields
 - Dynamic module instantiation with `for_each`
 - Tag merging with `merge()`
 - Cross-resource references
 - YAML parsing with `yamldecode()`
+- **Compatibility**: Both tools use identical HCL syntax
 
 ### For Harness
-- Terraform Plan/Apply steps
+- Terraform Plan/Apply steps (or OpenTofu equivalents)
 - Secret management
 - Environment overrides
 - Pipeline variables
 - Output consumption
 - Approval gates
+- **Tool Choice**: Pick Terraform or OpenTofu - same pipeline structure
 
 ## 🔄 Workflow
 
@@ -382,14 +387,28 @@ With this framework, you can:
 3. Add monitoring and alerting resources
 4. Create self-service portal
 
-## 🏆 Congratulations!
+## � **Congratulations!**
 
 You now have a production-ready, extensible, YAML-driven infrastructure deployment framework that:
-- Supports multiple resource types
-- Integrates seamlessly with Harness
-- Scales from 1 to 100+ resources
-- Is fully documented
-- Can be extended in minutes
-- Follows AWS and Terraform best practices
+- ✅ Supports multiple resource types
+- ✅ Integrates seamlessly with Harness
+- ✅ Works with both **Terraform** and **OpenTofu**
+- ✅ Scales from 1 to 100+ resources
+- ✅ Is fully documented
+- ✅ Can be extended in minutes
+- ✅ Follows AWS and IaC best practices
+- ✅ Tool-agnostic design - switch between Terraform/OpenTofu anytime!
 
 **Happy deploying! 🚀**
+
+---
+
+## 🔧 **Terraform or OpenTofu?**
+
+| Choose | When |
+|--------|------|
+| **Terraform** | You want HashiCorp support, established enterprise tool |
+| **OpenTofu** | You prefer open source, community-driven, vendor-neutral |
+| **Switch?** | Change Harness step type - no code changes needed! |
+
+**The framework doesn't care which you use - it just works!** ✨
