@@ -118,7 +118,7 @@ locals {
 module "ec2_instances" {
   for_each = local.merged_ec2_configs
   
-  source = "../../ec2-instance"
+  source = "${var.module_source_prefix}/ec2-instance"
   
   # Instance configuration
   instance_name     = each.value.instance_name
@@ -159,7 +159,7 @@ module "ec2_instances" {
 module "rds_instances" {
   for_each = local.merged_rds_configs
   
-  source = "../../rds"
+  source = "${var.module_source_prefix}/rds"
   
   # Basic configuration (mapped to your RDS module variables)
   db_name            = each.value.identifier
@@ -202,7 +202,7 @@ module "rds_instances" {
 module "load_balancers" {
   for_each = local.merged_alb_configs
   
-  source = "../../elb"
+  source = "${var.module_source_prefix}/elb"
   
   # Basic configuration (mapped to your ELB module variables)
   lb_name            = each.value.name
@@ -256,7 +256,7 @@ module "load_balancers" {
 # module "eks_clusters" {
 #   for_each = local.merged_eks_configs
 #   
-#   source = "../../eks"  # Create this module when needed
+#   source = "${var.module_source_prefix}/eks"
 #   
 #   cluster_name    = each.value.cluster_name
 #   cluster_version = each.value.cluster_version
@@ -276,7 +276,7 @@ module "load_balancers" {
 # module "ecs_clusters" {
 #   for_each = local.merged_ecs_configs
 #   
-#   source = "../../ecs"  # Create this module when needed
+#   source = "${var.module_source_prefix}/ecs"
 #   
 #   cluster_name       = each.value.cluster_name
 #   capacity_providers = each.value.capacity_providers
@@ -290,7 +290,7 @@ module "load_balancers" {
 # module "efs_filesystems" {
 #   for_each = local.merged_efs_configs
 #   
-#   source = "../../efs"  # Create this module when needed
+#   source = "${var.module_source_prefix}/efs"
 #   
 #   name             = each.value.name
 #   performance_mode = each.value.performance_mode
@@ -308,7 +308,7 @@ module "load_balancers" {
 # module "lambda_functions" {
 #   for_each = local.merged_lambda_configs
 #   
-#   source = "../../lambda"  # Create this module when needed
+#   source = "${var.module_source_prefix}/lambda"
 #   
 #   function_name = each.value.function_name
 #   runtime       = each.value.runtime
@@ -327,7 +327,7 @@ module "load_balancers" {
 # module "s3_buckets" {
 #   for_each = local.merged_s3_configs
 #   
-#   source = "../../s3"  # Create this module when needed
+#   source = "${var.module_source_prefix}/s3"
 #   
 #   bucket_name = replace(each.value.bucket_name, "${account_id}", local.common.account_id)
 #   versioning  = each.value.versioning

@@ -13,7 +13,27 @@ resources.yaml  →  main.tf  →  Module  →  outputs.tf
     (Config)      (Orchestration) (Implementation) (Results)
 ```
 
-## 📝 Step-by-Step: Adding a New Resource Type
+# Extending the Multi-Resource Framework
+
+This guide shows you how to add support for new AWS resource types (EKS, ECS, EFS, Lambda, S3, DynamoDB, etc.) to the YAML-driven deployment framework.
+
+## Prerequisites
+
+1. **Module Source Configuration**: Ensure your `module_source_prefix` points to where your modules are located:
+   ```hcl
+   # Local development
+   module_source_prefix = "../.."
+   
+   # Production with versioned modules
+   module_source_prefix = "git::https://github.com/your-org/terraform-modules.git//aws?ref=v1.0.0"
+   ```
+
+2. **Module Naming Convention**: Modules should follow the pattern: `${module_source_prefix}/<module-name>`
+   - EC2: `../../ec2-instance` or `git::https://.../ec2-instance`
+   - RDS: `../../rds` or `git::https://.../rds`
+   - EKS: `../../eks` or `git::https://.../eks`
+
+## Step-by-Step Guide to Add a New Resource Type
 
 Let's walk through adding **EKS (Elastic Kubernetes Service)** as an example.
 

@@ -87,14 +87,14 @@ See [HARNESS_INTEGRATION.md](./HARNESS_INTEGRATION.md) for detailed pipeline con
 
 | Resource Type | Status | Module Reference |
 |---------------|--------|------------------|
-| **EC2 Instances** | ✅ Active | `../../ec2-instance` |
-| **RDS Databases** | ✅ Active | `../../rds` |
-| **Application Load Balancers** | ✅ Active | `../../elb` |
-| **EKS Clusters** | 🔄 Ready to implement | `../../eks` (to be created) |
-| **ECS Clusters** | 🔄 Ready to implement | `../../ecs` (to be created) |
-| **EFS File Systems** | 🔄 Ready to implement | `../../efs` (to be created) |
-| **Lambda Functions** | 🔄 Ready to implement | `../../lambda` (to be created) |
-| **S3 Buckets** | 🔄 Ready to implement | `../../s3` (to be created) |
+| **EC2 Instances** | ✅ Active | `${module_source_prefix}/ec2-instance` |
+| **RDS Databases** | ✅ Active | `${module_source_prefix}/rds` |
+| **Application Load Balancers** | ✅ Active | `${module_source_prefix}/elb` |
+| **EKS Clusters** | 🔄 Ready to implement | `${module_source_prefix}/eks` (to be created) |
+| **ECS Clusters** | 🔄 Ready to implement | `${module_source_prefix}/ecs` (to be created) |
+| **EFS File Systems** | 🔄 Ready to implement | `${module_source_prefix}/efs` (to be created) |
+| **Lambda Functions** | 🔄 Ready to implement | `${module_source_prefix}/lambda` (to be created) |
+| **S3 Buckets** | 🔄 Ready to implement | `${module_source_prefix}/s3` (to be created) |
 
 ## 🔧 Key Features Explained
 
@@ -239,10 +239,111 @@ That's it! See [EXTENDING.md](./EXTENDING.md) for detailed guide.
 
 ## 📚 Documentation
 
-- **[USAGE.md](./USAGE.md)** - Detailed usage guide with examples
+- **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** - ⚡ Quick command reference and common patterns
+- **[MODULE_SOURCE_UPDATE.md](./MODULE_SOURCE_UPDATE.md)** - 📘 Complete guide to module source configuration
+- **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Quick start summary with examples
 - **[EXTENDING.md](./EXTENDING.md)** - How to add new resource types
-- **[HARNESS_INTEGRATION.md](./HARNESS_INTEGRATION.md)** - Harness pipeline setup
-- **[EXAMPLES.md](./EXAMPLES.md)** - Common deployment scenarios
+- **[HARNESS_INTEGRATION.md](./HARNESS_INTEGRATION.md)** - Harness pipeline setup (Terraform & OpenTofu)
+- **[EXAMPLES.md](./EXAMPLES.md)** - 10+ real-world deployment scenarios
+
+## 🛠️ Configuration
+
+### Module Source Configuration
+
+Control where your Terraform modules are loaded from using the `module_source_prefix` variable:
+
+```hcl
+# Local modules (default for development)
+module_source_prefix = "../.."
+# Resolves to: ../../ec2-instance, ../../rds, ../../elb
+
+# Git repository with versioning
+module_source_prefix = "git::https://github.com/your-org/terraform-modules.git//aws?ref=v1.2.3"
+# Resolves to: git::https://github.com/your-org/terraform-modules.git//aws/ec2-instance?ref=v1.2.3
+
+# Terraform Registry
+module_source_prefix = "app.terraform.io/your-org"
+# Resolves to: app.terraform.io/your-org/ec2-instance
+
+# S3 bucket
+module_source_prefix = "s3::https://s3.amazonaws.com/terraform-modules/aws"
+# Resolves to: s3::https://s3.amazonaws.com/terraform-modules/aws/ec2-instance
+```
+
+**Setting the variable:**
+
+```bash
+# Via command line
+terraform plan -var="module_source_prefix=git::https://..."
+
+# Via terraform.tfvars
+echo 'module_source_prefix = "git::https://..."' > terraform.tfvars
+terraform plan
+
+# Via Harness (see HARNESS_INTEGRATION.md)
+```
+
+**Best practices:**
+- Use local paths (`../..`) for development and testing
+- Use versioned Git refs (`?ref=v1.0.0`) for production deployments
+- Pin to specific commits for critical environments
+
+### YAML Configuration
+
+### YAML Configuration
+
+Edit `resources.yaml` to define your AWS infrastructure:
+
+```yaml
+common:
+  region: "us-west-2"
+  vpc_id: "vpc-abc123"
+  environment: "production"
+  common_tags:
+    department: "Engineering"
+    managed_by: "Terraform"
+
+ec2_instances:
+  web-server:
+    enabled: true
+    instance_name: "web-01"
+    # ... more configuration
+```
+
+All resource sections support an `enabled` flag for easy toggling without deleting configuration.
+
+## 🚀 Deployment
+
+```bash
+# Initialize modules (required after changing module_source_prefix)
+terraform init
+
+# Plan deployment
+terraform plan
+
+# For remote modules, pass the prefix variable
+terraform plan -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+
+# Apply changes
+terraform apply
+
+# Or use OpenTofu
+tofu init
+tofu plan -var="module_source_prefix=app.terraform.io/your-org"
+tofu apply
+```
+
+### Multi-Environment Deployments
+
+```bash
+# Development (local modules)
+terraform workspace select dev
+terraform apply
+
+# Production (versioned remote modules)
+terraform workspace select prod
+terraform apply -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.2.3"
+```
 
 ## 🤝 Contributing
 
@@ -256,11 +357,15 @@ To add support for a new AWS resource type:
 
 ## ⚠️ Important Notes
 
-- **State Management**: Always use remote state (S3) for production deployments
-- **Secrets**: Never commit sensitive values to the YAML file
-- **Module Compatibility**: Ensure your existing modules match the variable names used in `main.tf`
-- **Resource Dependencies**: Terraform/OpenTofu automatically handles dependencies between resources
-- **OpenTofu Compatible**: Framework works with both Terraform and OpenTofu - just change the CLI command or Harness step type
+1. **Module Source Control**: Use `module_source_prefix` variable to switch between local and remote modules easily
+2. **Module Availability**: Ensure modules exist at the specified source before deployment (`ec2-instance`, `rds`, `elb`)
+3. **Future Modules**: Templates provided in `main.tf` for EKS, ECS, EFS, Lambda, S3 - uncomment when modules are available
+4. **Versioning**: Always use Git tags or specific commits in production (`?ref=v1.0.0` or `?ref=abc123`)
+5. **State Management**: Always use remote state (S3) for team/production deployments
+6. **Secrets**: Never commit sensitive data; use Harness Secret Manager or environment variables
+7. **Module Compatibility**: Ensure module variable names match those used in `main.tf` module calls
+8. **Resource Dependencies**: Terraform/OpenTofu automatically handles dependencies (e.g., ALB→EC2 references)
+9. **OpenTofu Compatible**: Works seamlessly with both Terraform (1.0+) and OpenTofu (1.6+)
 
 ## 🐛 Troubleshooting
 
@@ -279,6 +384,12 @@ Internal use only - BeiGene Infrastructure Team
 
 ## 👥 Support
 
-For questions or issues:
-- Infrastructure Team Slack: #infra-terraform
-- Email: infrastructure-team@beigenecorp.com
+For questions or issues please connect with members from  Build and Design Team:
+Imran Bawany -  imran.bawany@beonemed.com
+Moiz Irshad - moiz.irshad@beonemed.com; 
+Obaid Rahman -  obaid.rahman@beonemed.com
+Vaibhav Jain - vaibhav.jain@beonemed.com
+Sai Koganti - sai.koganti@beonemed.com
+Rajkumar Sooriyanarayanan - rsooriyanarayanan@beonemed.com
+
+

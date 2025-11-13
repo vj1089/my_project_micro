@@ -3,6 +3,15 @@
 # ============================================
 
 # ============================================
+# Module Source Prefix
+# ============================================
+variable "module_source_prefix" {
+  type        = string
+  description = "Prefix for all module sources. Can be local path (../..) or remote (git::https://..., app.terraform.io/org/, etc.)"
+  default     = "../.."
+}
+
+# ============================================
 # Configuration File Override
 # ============================================
 variable "resources_config_file" {

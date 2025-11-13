@@ -286,7 +286,10 @@ pipeline:
                                 rds_passwords = {
                                   "mysql-primary" = "<+secrets.getValue('mysql_primary_password')>"
                                 }
-                                kms_key_arn = "<+secrets.getValue('kms_key_arn')>"
+                                   kms_key_arn = "<+secrets.getValue('prod_kms_key')>"
+   ```
+
+5. **Plan Before Apply**: Always run Terraform Plan step before Apply
                                 deployment_id = "<+pipeline.executionId>"
                   timeout: 15m
               

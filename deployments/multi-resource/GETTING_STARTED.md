@@ -95,9 +95,19 @@ load_balancers:
 - Environment-specific deployments
 - Approval gates
 - Rich outputs for downstream steps
-- Pipeline templates included
+- Pipeline templates included (both Terraform and OpenTofu)
 
-### 7. **Extensible Architecture**
+### 7. **Module Source Flexibility**
+Single variable controls all module sources:
+```hcl
+# Development - local modules
+module_source_prefix = "../.."
+
+# Production - versioned remote modules  
+module_source_prefix = "git::https://github.com/org/modules.git//aws?ref=v1.2.3"
+```
+
+### 8. **Extensible Architecture**
 Adding a new resource type requires only:
 1. Add YAML structure
 2. Add module block in main.tf
@@ -106,7 +116,7 @@ That's it!
 
 ## 🚀 Quick Start
 
-### For Local Testing
+### For Local Testing (Default)
 
 ```bash
 # 1. Navigate to directory
@@ -115,7 +125,7 @@ cd deployments/multi-resource/
 # 2. Edit resources.yaml with your values
 vim resources.yaml
 
-# 3. Initialize Terraform
+# 3. Initialize Terraform with local modules
 terraform init
 
 # 4. Review plan
@@ -125,13 +135,31 @@ terraform plan
 terraform apply
 ```
 
+### Using Remote Modules
+
+```bash
+# Option 1: Via terraform.tfvars file
+echo 'module_source_prefix = "git::https://github.com/org/modules.git//aws?ref=v1.0.0"' > terraform.tfvars
+terraform init
+terraform plan
+terraform apply
+
+# Option 2: Via command line
+terraform plan -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+terraform apply -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+
+# Option 3: Terraform Registry
+terraform plan -var="module_source_prefix=app.terraform.io/your-org"
+```
+
 ### For Harness Deployment
 
 ```bash
 # 1. Import pipeline from HARNESS_INTEGRATION.md
 # 2. Configure secrets in Harness
-# 3. Edit resources.yaml in your Git repo
-# 4. Run pipeline in Harness
+# 3. Set module_source_prefix pipeline variable
+# 4. Edit resources.yaml in your Git repo
+# 5. Run pipeline in Harness
 ```
 
 ## 📊 What Gets Deployed

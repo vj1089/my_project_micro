@@ -1,10 +1,41 @@
-# Quick Start Examples
+# Multi-Resource Deployment Examples
 
-Common deployment scenarios using the multi-resource framework.
+> **OpenTofu Compatible**: All examples work with both Terraform and OpenTofu. Simply replace `terraform` with `tofu` in commands.
 
-> **💡 Works with Terraform and OpenTofu**: All examples work identically with both tools. Just use `terraform` or `tofu` CLI commands.
+This document provides real-world examples of using the YAML-driven multi-resource deployment framework.
 
-## Example 1: Simple Web Application Stack
+## � Module Source Configuration
+
+All examples can use local or remote modules by setting the `module_source_prefix` variable:
+
+```bash
+# Local modules (default for development/testing)
+module_source_prefix = "../.."
+
+# Git repository with versioning (recommended for production)
+module_source_prefix = "git::https://github.com/your-org/terraform-modules.git//aws?ref=v1.2.3"
+
+# Terraform Registry
+module_source_prefix = "app.terraform.io/your-org"
+
+# Specific Git commit (for critical production)
+module_source_prefix = "git::https://github.com/your-org/terraform-modules.git//aws?ref=abc123"
+```
+
+**How to use:**
+```bash
+# Via command line
+terraform plan -var="module_source_prefix=git::https://..."
+
+# Via terraform.tfvars file
+echo 'module_source_prefix = "git::https://..."' > terraform.tfvars
+terraform plan
+
+# Via Harness (see HARNESS_INTEGRATION.md)
+# Set module_source_prefix as a pipeline variable
+```
+
+---
 
 Deploy a web server, application server, database, and load balancer.
 
@@ -90,11 +121,33 @@ load_balancers:
 
 ### Deploy
 
-**With Terraform:**
+**Using local modules (development):**
 ```bash
 terraform init
 terraform plan
 terraform apply -auto-approve
+```
+
+**Using remote modules (production):**
+```bash
+# With command line variable
+terraform init -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+terraform plan -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+terraform apply -var="module_source_prefix=git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+
+# Or create terraform.tfvars
+cat > terraform.tfvars <<EOF
+module_source_prefix = "git::https://github.com/org/modules.git//aws?ref=v1.0.0"
+EOF
+terraform init
+terraform apply -auto-approve
+```
+
+**With OpenTofu:**
+```bash
+tofu init
+tofu plan -var="module_source_prefix=app.terraform.io/your-org"
+tofu apply
 ```
 
 **With OpenTofu:**
